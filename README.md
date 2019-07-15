@@ -1,7 +1,8 @@
-# detectApneas
+# apneaDetector
+
 Software for the detection of apneas from rodent pleth data. This code allows the installation of a Matlab app that can take rodent pleth data from an EDF file and outputs data for apnea detection. This app was built under Matlab 2019a and may require this version of the software in order to run properly. Please contact Jesse Pfammatter (pfammatter@wisc.edu or jesse.pfammatter@gmail.com) for questions, comments, bug notifications, feature enhancement suggestions, etc. 
 
-07/15/19 -----
+# Update 07/15/19
 
 First beta relase of this software on July 15th 2019. apneaDetector v0.1
 
