@@ -4,6 +4,21 @@ Software for the detection of apneas from rodent pleth data. This code allows th
 
 Please download sample files from https://www.dropbox.com/sh/5dpmzuvlebjbheq/AABBQOaLNCXxSjBD-T89iSk4a?dl=0 to test software.
 
+# Update 3 07/15/19
+
+Added additional files to app package so that it runs on naive machines. Other additions include:
+
+1. Toggle button to add raw data visibility to event window.. this isn't finished.
+2. Some plotting visual changes.
+3. Added a 'session notes' section where users can enter information relevant to their session of scoring.
+
+A few of the features to be added in next release:
+
+1. legends for all plots.
+2. Improved speed during apnea detection.
+3. Improve event inspector display window to include ability to change the xlimits and view a wider timescale and additional plot toggle functionality.
+
+
 # Update 2 07/15/19
 
 Updated app to apneaDetector v0.2
