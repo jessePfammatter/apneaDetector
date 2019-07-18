@@ -1,5 +1,6 @@
 function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
 
+    doPlot = 0; % set to 1 if you want to see the final versions of the plotting fits... need to work on this xxx
 
     % establish the time signal
     totalSeconds = length( filteredPlethSignal) /  fs;
@@ -144,16 +145,19 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
     x = hfit(1).XData;
     guess = [0.2, 0.2, 2500, 0.7, 0.2,  7000];
     options = optimset('MaxFunEvals', 1000);
-    [guess, ~] = fminsearch( 'fit_gauss2', guess, options, x, y, 1);
+    [guess, ~] = fminsearch( 'fit_gauss2', guess, options, x, y, 0);
     hold on;
 
     [mu1, sig1, amp1, mu2, sig2, amp2 ] = deal(  guess(1), guess(2), guess(3), guess(4), guess(5), guess(6));
     est = amp1.*exp(-(x-mu1).^2./sig1.^2) + amp2.*exp(-(x-mu2).^2./sig2.^2);
 
-    bar(x, y);
-    plot(x, est, 'g');
-    title('Hist/Fit', 'interpreter', 'none');
-    xlabel('IEI (s)');
+    if doPlot == 1
+        bar(x, y);
+        plot(x, est, 'g');
+        title('Hist/Fit', 'interpreter', 'none');
+        xlabel('IEI (s)');
+    end
+    
     hold off;
 
     temp = abs([mu1, mu2] - normalBreath);
@@ -185,16 +189,18 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
     x = hfit(1).XData;
 
     guess = [1, 1, 1200];
-    [guess, ~] = fminsearch( 'fit_gauss', guess, options, x, y, 1);
+    [guess, ~] = fminsearch( 'fit_gauss', guess, options, x, y, 0);
     hold on;
 
     [mu1, sig1, amp1 ] = deal(  guess(1), guess(2), guess(3));
     est = amp1.*exp(-(x-mu1).^2./sig1.^2);
 
-    bar(x, y);
-    plot(x, est, 'g');
-    title('Hist/Fit', 'interpreter', 'none');
-    xlabel('Duration between Breaths (s)');
+    if doPlot == 1
+        bar(x, y);
+        plot(x, est, 'g');
+        title('Hist/Fit', 'interpreter', 'none');
+        xlabel('Duration between Breaths (s)');
+    end
     hold off;
 
     % now delete all breaths with really low amplitude
@@ -292,14 +298,18 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
     x = hfit(1).XData;
     close gcf
     guess = [0.2, 0.2, 3000, 0.7, 0.2,  200];
-    [guess, ~] = fminsearch( 'fit_gauss', guess, options, x, y, 1);
+    [guess, ~] = fminsearch( 'fit_gauss', guess, options, x, y, 0);
     hold on;
     [mu1, sig1, amp1] = deal(  guess(1), guess(2), guess(3));
     est = amp1.*exp(-(x-mu1).^2./sig1.^2);
-    bar(x, y);
-    plot(x, est, 'g');
-    title('Hist/Fit', 'interpreter', 'none');
-    xlabel('signalVariability (line length)');
+    
+    if doPlot == 1
+        bar(x, y);
+        plot(x, est, 'g');
+        title('Hist/Fit', 'interpreter', 'none');
+        xlabel('signalVariability (line length)');
+    end
+    
     hold off;
 
     % find n standard deviations away from the mean
@@ -358,14 +368,16 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
     x = hfit(1).XData;
     close gcf
     guess = [1.5, 0.5, 7e5];
-    [guess, ~] = fminsearch( 'fit_gauss', guess, options, x, y, 1);
+    [guess, ~] = fminsearch( 'fit_gauss', guess, options, x, y, 0);
     hold on;
     [mu1, sig1, amp1] = deal(  guess(1), guess(2), guess(3));
     est = amp1.*exp(-(x-mu1).^2./sig1.^2);
-    bar(x, y);
-    plot(x, est, 'g');
-    title('Hist/Fit', 'interpreter', 'none');
-    xlabel('runningIei inverse');
+    if doPlot == 1
+        bar(x, y);
+        plot(x, est, 'g');
+        title('Hist/Fit', 'interpreter', 'none');
+        xlabel('runningIei inverse');
+    end
     hold off;
 
     % find n standard deviations away from the mean
