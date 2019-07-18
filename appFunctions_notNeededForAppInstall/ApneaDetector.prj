@@ -3,13 +3,13 @@
     <param.appname>apneaDetector</param.appname>
     <param.icon />
     <param.icons />
-    <param.version>0.1</param.version>
+    <param.version>0.4</param.version>
     <param.authnamewatermark>Jesse Pfammatter</param.authnamewatermark>
     <param.email>pfammatter@wisc.edu</param.email>
     <param.company>University of Wisconsin Madison</param.company>
     <param.summary>Software for the automated detection of apneas from rodent pleth.</param.summary>
     <param.description>This beta version of the software is the first release.</param.description>
-    <param.screenshot>/Users/jesse/Desktop/Screen Shot 2019-07-14 at 9.38.53 PM.png</param.screenshot>
+    <param.screenshot>/Users/jesse/Desktop/Screen Shot 2019-07-18 at 9.20.01 AM.png</param.screenshot>
     <param.guid />
     <param.installpath.string>/apneaDetector/</param.installpath.string>
     <param.installpath.combo>option.installpath.systemwideapp</param.installpath.combo>
@@ -79,7 +79,10 @@ ${DYLD_LIBRARY_PATH}:MR/v96/runtime/maci64:MR/v96/sys/os/maci64:MR/v96/bin/maci6
     <fileset.main>
       <file>${PROJECT_ROOT}/apneaDetector.mlapp</file>
     </fileset.main>
-    <fileset.resources />
+    <fileset.resources>
+      <file>/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Utility_Functions/Fitting/fit_gauss.m</file>
+      <file>/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Utility_Functions/Fitting/fit_gauss2.m</file>
+    </fileset.resources>
     <fileset.package />
     <fileset.depfun>
       <file>${PROJECT_ROOT}/compareApneaScores.m</file>
