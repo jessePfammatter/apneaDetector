@@ -6,7 +6,22 @@ This software requires Matlab's curvefitting toolbox to be installed.
 
 Please download sample files from https://www.dropbox.com/sh/5dpmzuvlebjbheq/AABBQOaLNCXxSjBD-T89iSk4a?dl=0 to test software.
 
-# Update 3 07/15/19
+# Update 4 07/16/19, version 0.4
+
+Changelog:
+
+1. Added log for version and date to export object.
+2. Removed visualization of fminsearch processing plots during breath and apnea detection, this improved code run time by ~80 seconds. Full run time for detecting breaths and apneas is now around ~80 seconds on an iMac (Retina 5K, 27-inch, Late 2014, 4 GHz Intel Core i7).
+3. disabled mouse interactions and the toolbar visibility for all plots until bugs are repaired (Matlab ticket in progress).
+4. Hid visibility of save and load functionality from the file menu until bugs are worked out.. Currently only the data export functionality is available.
+5. Changed the value of the manual apnea category assign button to 'Unset' rather than to mimic the automated score. This aids the user in knowing on which events they have made a manual change.
+6. Added a Legend to and improved visualization of the Filtered Signal and Apnea Detection Plot Window.
+7. Reduced number of data points plotted in serval plot windows in order to reduce the number of 'glitches' as a woraround for Matlab's plotting methods issues.
+
+New Known Issues:
+As a result of this update the display indicating, 'Please Wait..' does not show at all during processing.
+
+# Update 3 07/15/19, version 0.3
 
 Added additional files to app package so that it runs on naive machines. Other additions include:
 
@@ -20,15 +35,14 @@ A few of the features to be added in next release:
 2. Improved speed during apnea detection.
 3. Improve event inspector display window to include ability to change the xlimits and view a wider timescale and additional plot toggle functionality.
 
-
-# Update 2 07/15/19
+# Update 2 07/15/19, version 0.2
 
 Updated app to apneaDetector v0.2
 
 1. The 'Save' functionality doesn't seem to be functioning properly in the deployed app so for the time being I created an 'Export Data' menu item which allows users to save data from the app to be manipulated outside of the app.
 2. I also fixed the known issue listed as #6 in Update 1 07/15/19.
 
-# Update 1 07/15/19
+# Update 1 07/15/19, version 0.1
 
 First beta relase of this software on July 15th 2019. apneaDetector v0.1
 
