@@ -6,7 +6,7 @@ This software requires Matlab's curvefitting toolbox to be installed.
 
 Please download sample files from https://www.dropbox.com/sh/5dpmzuvlebjbheq/AABBQOaLNCXxSjBD-T89iSk4a?dl=0 to test software.
 
-# Update 4 07/19/19, version 0.5
+# Update 5 07/19/19, version 0.5
 
 Changelog:
 
