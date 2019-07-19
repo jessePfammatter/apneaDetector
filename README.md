@@ -6,6 +6,17 @@ This software requires Matlab's curvefitting toolbox to be installed.
 
 Please download sample files from https://www.dropbox.com/sh/5dpmzuvlebjbheq/AABBQOaLNCXxSjBD-T89iSk4a?dl=0 to test software.
 
+# Update 4 07/19/19, version 0.5
+
+Changelog:
+
+1. Improved code annotation and cleaned up some unecessary text in apneaDetector.mlapp
+2. Improved support plots on the right side of app.
+3. Fixed issue where artifact after sigh was causing breaths to be detected after sigh which caused shortened apneas and innaccurate classification.
+4. Identified all sighs, including ones that don't have an apnea directly following.
+5. Fixed issue where apnea durations were being plotted incorrectly in the event inspector window. Events are still plotted a bit on the short end for some reason but the relative durations are correct after a fix to some indexing.
+6. Added a button to visualize raw signal in event inspector window.
+
 # Update 4 07/16/19, version 0.4
 
 Changelog:
