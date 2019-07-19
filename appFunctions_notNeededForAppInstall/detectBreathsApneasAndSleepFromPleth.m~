@@ -17,7 +17,7 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
     lowAmplitudesBreathStdMultiplier = 2.5; % stds
     breathCutoff = 200; % seconds? data points?
     postSighPlusDurationMultiplier = 5; % breath lenghts, number is half the number of breath lengths that you think should be inclusive of post sigh breaths
-    sighsStdMultiplier = 4;        
+    sighsStdMultiplier = 3;        
     
     % set some variables for apnea detection
     breathRateSecsLowEnd = 0.5; % seconds
@@ -467,11 +467,11 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
     for i = 1:output.howManyApneas
         thisApneaStart = output.apneaStarts(i);
         distFromSighs = thisApneaStart - output.sighStarts;
-        distFromSighs = distFromSighs(distFromSighs >= 0);
+        distFromSighs = distFromSighs > 0;
         distFromSighs = min(distFromSighs);
         
         % is there a sigh within 1 breath of the start or is the start sigh? The post-sigh
-        if distFromSighs >= 0 & distFromSighs <= output.apneaThreshold * fs
+        if distFromSighs > 0 & distFromSighs <= output.apneaThreshold * fs / 2
             output.typeOfApnea(i) = 2;
             
         % is there a sigh within the postSighPlusDuration Crit? if so then post sigh plus    
@@ -519,6 +519,8 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
     sighsInd = clusterInd == sighs;
     
     
+    
+
     % now add a third type of category for post sigh plus.
     temp = find(notSighsInd);
     for j = 1:sum(notSighsInd)
