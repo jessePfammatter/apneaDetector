@@ -6,6 +6,19 @@ This software requires Matlab's curvefitting toolbox to be installed.
 
 Please download sample files from https://www.dropbox.com/sh/5dpmzuvlebjbheq/AABBQOaLNCXxSjBD-T89iSk4a?dl=0 to test software.
 
+# Update 6 07/22/19, version 0.6
+
+Changelog:
+
+1. Added summary plots for windows 2/3 on the right side of the plot
+2. Updated the starting position of the apneaDetector window to [0, 0] to prevent problems on smaller screens... Still problematic on really small screens.
+3. Changed the asthetic of the plots to all have white background.
+4. Added a version indicator to the menu list.
+
+Known issues:
+
+Duration of apnea is plotted a bit short. The data for the apneas are stored correctly. I think this has to do with the new plotting methods which reduce the number of data points shown/drawn in each plot.
+
 # Update 5 07/19/19, version 0.5
 
 Changelog:
