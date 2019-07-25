@@ -1,6 +1,6 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="623327138" file="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas/ApneaDetector.prj" location="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas" name="ApneaDetector" target="target.mlapps" target-name="Package App">
-    <param.appname>ApneaDetector</param.appname>
+  <configuration build-checksum="225681701" file="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas/apneaDetector.prj" location="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas" name="apneaDetector" target="target.mlapps" target-name="Package App">
+    <param.appname>apneaDetector</param.appname>
     <param.authnamewatermark>Jesse Pfammatter</param.authnamewatermark>
     <param.email>pfammatter@wisc.edu</param.email>
     <param.company>University of Wisconsin Madison</param.company>
@@ -9,7 +9,7 @@
     <param.summary>Software for the automated detection of breaths and apneas from rodent pleth EDF records.</param.summary>
     <param.description>dad</param.description>
     <param.screenshot>${PROJECT_ROOT}/apneaDetectorSplashScreen/splashScreenRectangle.png</param.screenshot>
-    <param.version>0.6</param.version>
+    <param.version>0.7</param.version>
     <param.products.name />
     <param.products.id />
     <param.products.version />

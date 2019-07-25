@@ -440,22 +440,18 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
     output.theseAreMissedBreaths = output.iei > output.apneaThreshold;
     
     % need to exclude things that occur during 'wake' periods.
-    wakeIndicator = zeros(length(output.starts), 1);
     fullWakeList = zeros(1, sum(output.wakeDurations));
     for j = 1:length(output.wakeStarts)
         indexStart = sum(output.wakeDurations(1:j-1)) + 1;
         indexEnd = indexStart + output.wakeDurations(j);
         fullWakeList(:, indexStart:indexEnd) = output.wakeStarts(j):output.wakeStarts(j)+output.wakeDurations(j);
     end
-   
-    for j = 1:length(wakeIndicator)
-        timeInQuestion = output.starts(j);
-        if sum(timeInQuestion == fullWakeList)
-            wakeIndicator(j) = 1;
-        end
-    end
+       
+    wakeIndicator = ismember(output.starts, fullWakeList);
     
-    output.theseAreMissedBreaths = output.theseAreMissedBreaths & ~wakeIndicator(1:end-1)';
+    output.theseAreMissedBreaths = output.theseAreMissedBreaths & ~wakeIndicator(1:end-1);
+    output.theseAreNormalBreaths = ~output.theseAreMissedBreaths & ~wakeIndicator(1:end-1);
+
     output.apneaDurations = output.iei(output.theseAreMissedBreaths);
     output.apneaIndex = find(output.theseAreMissedBreaths);
     output.howManyApneas = sum(output.theseAreMissedBreaths);
@@ -471,9 +467,13 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
         distFromSighs = min(distFromSighs);
         
         % is there a sigh within 1 breath of the start or is the start sigh? The post-sigh
-        if distFromSighs >= 0 & distFromSighs <= output.apneaThreshold * fs
-            output.typeOfApnea(i) = 2;
-            
+        if distFromSighs == 0
+            output.typeOfApnea(i) = 2;        
+        elseif distFromSighs > 0 & distFromSighs <= output.apneaThreshold * fs
+            output.apneaStarts(i) = thisApneaStart - distFromSighs; % xxx added this to fix placement start.. is this right?
+            output.apneaDurations(i) = output.apneaDurations(i) + (distFromSighs / fs);
+            output.apneaIndex(i) = output.apneaIndex(i) - 1;
+       
         % is there a sigh within the postSighPlusDuration Crit? if so then post sigh plus    
         elseif  distFromSighs > output.apneaThreshold * fs / 2 & distFromSighs < output.postSighPlusDurationCrit
             output.typeOfApnea(i) = 3;
@@ -484,55 +484,6 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
             output.typeOfApnea(i) = 1;
         end
     end
-        
-    
-    %{
-    % now cluster the apnea related breaths to figure out which ones are spontaneous
-    clear sighs notSighs
-
-    % remove any really high amplitudues prior to clustering because they throw off the clustering
-    temp = output.amplitudes(output.theseAreMissedBreaths)';
-    temptemp = temp < prctile(temp, 99); % 
-    clusterInd = kmeans(temp(temptemp), 2);
-    counter = 1;
-    for j = 1:size(temptemp, 1)
-        if temptemp(j) == 1
-            newClusterInd(j) = clusterInd(counter);
-            counter = counter + 1;
-        end
-    end
-    clusterInd = newClusterInd;
-    clear newClusterInd temptemp temp
-
-    meanA = mean(output.amplitudes(output.apneaIndex(clusterInd == 1)));
-    meanB = mean(output.amplitudes(output.apneaIndex(clusterInd == 2)));
-
-    if meanA > meanB
-        sighs = 1;
-        notSighs = 2;
-    else
-        notSighs = 1;
-        sighs = 2;
-    end
-
-    notSighsInd = clusterInd == notSighs;
-    sighsInd = clusterInd == sighs;
-    
-    
-    % now add a third type of category for post sigh plus.
-    temp = find(notSighsInd);
-    for j = 1:sum(notSighsInd)
-        timeInQuestion = output.apneaStarts(temp(j));
-        temptemp = timeInQuestion - output.apneaStarts(find(sighsInd));
-        converttoPSP(j) = sum(temptemp <  output.postSighPlusDurationCrit & temptemp > 0);
-    end    
-    
-    % now save everything to the output
-    output.typeOfApnea = zeros(length(clusterInd),1);
-    output.typeOfApnea(notSighsInd) = 1; % spontaneous
-    output.typeOfApnea(sighsInd) = 2; % post sigh
-    output.typeOfApnea(temp(find(converttoPSP))) = 3; % postSighPlus
-    %}
     
     output.nSpontaneousApneas = sum(output.typeOfApnea == 1);
     output.nPostSighApneas = sum(output.typeOfApnea == 2);
