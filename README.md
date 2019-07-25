@@ -6,6 +6,30 @@ This software requires Matlab's curvefitting toolbox to be installed.
 
 Please download sample files from https://www.dropbox.com/sh/5dpmzuvlebjbheq/AABBQOaLNCXxSjBD-T89iSk4a?dl=0 to test software.
 
+# Update 7 07/25/19, version 0.7
+
+Changelog:
+
+1. Updated supporting plots on right of screen to fix axes dissapearing problem.
+2. Changed y label of main plots to indicate that signals are normalized.
+3. Fixed problem where post-sigh artifacts are causing mistakes in the breath clustering view.
+4. Fixed issue where marker data points are showing up in the legend.
+5. Changed the 'Unset' button to read 'Unadjusted' for clarity.
+6. Fixed plotting issue where some 'normal breaths' were shown in the range of apneas in the clustering window. This was caused because some dong duration missed breaths were found during wake were getting counted as normal breaths.
+7. Checked all options and made sure that unavailable functionality is greyed out or not visible.
+8. Fixed issue where importing apnea scoring isn't properly displayed.
+9. Fixed plotting of apnea comparisons.
+10. Added functionality to zoom in and out of event Inspector window to look for sighs, etc. prior to anpea.
+11. Added hotkeys for loading signal and apnea detection.
+12. Used Matlab profiler to identify slow areas in app and reduced runtime from ~80 seconds to ~45 seconds on my machine. Still other areas to improve speed if needed.
+13. Added a cancel button to apnea detection wait window.
+
+Future Updates:
+1. Show hypopneas in breath clustering window.
+2. Clicking on event in the clustering window or in the filtered signal window will take you to that event in the event inspector window.
+3. Allow importing of sleep score files.
+4. Allow import of saved data to inspect record.
+
 # Update 6 07/22/19, version 0.6
 
 Changelog:
