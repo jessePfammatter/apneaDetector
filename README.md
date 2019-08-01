@@ -8,7 +8,7 @@ Please download sample files from https://www.dropbox.com/sh/5dpmzuvlebjbheq/AAB
 
 A note to non-developer types: I've included my development scripts/functions such that the experienced user can modify and repackage this app to suit their needs. It's not suggested to download and manipulate the extra program files unless you are familiar with this process.
 
-# Update 8 07/26/19, version 0.8
+# Update 8 08/01/19, version 0.8
 
 Changelog:
 
@@ -19,7 +19,6 @@ Changelog:
 5. Removed the toggle button group for auto apnea classification and replaced it with a single line of text that isn't editable and that's hopefully less confusing for users.
 6. Removed menu option for changing of apnea threshold as 2x the average breath interval is the published apnea accepted duration.
 7. Added a menu button to toggle on/off the circles which indicate which event the event inspector in currently highlighting -- this helps with app speed for slower machines.
-
 
 # Update 7 07/25/19, version 0.7
 
