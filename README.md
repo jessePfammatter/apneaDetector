@@ -19,7 +19,7 @@ Changelog:
 5. Removed the toggle button group for auto apnea classification and replaced it with a single line of text that isn't editable and that's hopefully less confusing for users.
 6. Removed menu option for changing of apnea threshold as 2x the average breath interval is the published apnea accepted duration.
 7. Added a menu button to toggle on/off the circles which indicate which event the event inspector in currently highlighting -- this helps with app speed for slower machines.
-8. Updated the detection of sighs to utilize the negative inflection that occurs after a sigh as another diagnostic to help differentiate sighs from regular but somewhat high amplitude breaths.
+8. Updated the detection of sighs to utilize tidal volume to help differentite sighs from regular breaths. (Using the negative deflection associated with some sighs isn't consitently workable for all files.)
 9. Fixed the plotting of events in the cluster window to match their appropriate events.
 10. Fixed plotting the the apnea durations in the event inspector window.
 
