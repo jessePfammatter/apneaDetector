@@ -11,19 +11,21 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
     highThreshMultiplier = 0.40; % quantiles of the signal
     lowThreshMultiplier = 0.10;
     hypopneaThresh = 0.6; % percent of tidal volume
-    normalBreath = 0.65; % seconds
+    normalBreath = 0.65; % seconds as a starting point. % xxx does this need to change for mice?
     apneaThresholdMultiplier = 2; % default multiplier which determins which breath gaps should be classified as apneas.
     breathGluerParam = floor(fs / (120 / 60) / 15); % value based on the expected heart rate of 120 bpm, and then a 15th of that, had as a 10th before.
     lowAmplitudesBreathStdMultiplier = 2.5; % stds
     breathCutoff = 200; % seconds? data points?
-    postSighPlusDurationMultiplier = 5; % breath lenghts, number is half the number of breath lengths that you think should be inclusive of post sigh breaths
-    sighsStdMultiplier = 4;        
-    
-    % set some variables for apnea detection
     breathRateSecsLowEnd = 0.5; % seconds
     breathRateSecsHighEnd = 0.95; % seconds
     
-    % sleepScoring adjustable variables
+    % under this list are things people might want control of for sighs
+    postSighPlusDurationMultiplier = 5; % breath lenghts, number is half the number of breath lengths that you think should be inclusive of post sigh breaths
+    sighsStdMultiplier = 4;
+    sighTidalVolumeMultFactor = 4;
+    %sighMinMultiplier = 1; % xxx maybe remove this because it doesn't seem to work on many
+    
+    % sleepScoring adjustable variables.. perhaps make these adjustable for sleep.
     wakeDurationsCutoff = 60; % seconds, works well at 30 as well
     nStdsFromIIEContinuous = 3; % std deviations
     smoothDuration = 20; % works well at 30, go forwards and backwards for this smoothing
@@ -191,10 +193,12 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
     iei_sig = sig;
 
     % now find all of the breaths with normal rythm that have a normal amplitude
-    hfit = histfit(output.amplitudes(keepInd), 200, 'kernel');
+    
+    % this restricts the range so that the histogram function works preoperly.
+    temp = output.amplitudes(keepInd);
+    temp(temp > 15) = mean(output.amplitudes);
+    hfit = histfit(temp, 100, 'kernel');
     xlabel('Amplitudes');    
-    %hfit = histfit(output.peakProminence(keepInd), 200, 'kernel');
-    %xlabel('peakProminence');
     ylabel('Counts');
     y = hfit(1).YData;
     x = hfit(1).XData;
@@ -224,6 +228,22 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
     % save the high amplitude cutoff to figure out which breaths are sighs
     output.sighsThreshold = amplitude_mu + (amplitude_sig * sighsStdMultiplier);
     
+    %{
+    
+    
+    xxx
+    
+    % find the just outside the normal range of the raw signal in order to set a cutoff of for the low side of the sighs
+    temp = filteredPlethSignal(filteredPlethSignal > -15 & filteredPlethSignal < 15);
+    hfit = histfit(temp, 100, 'kernel');
+    y = hfit(1).YData;
+    x = hfit(1).XData;
+    guess = [0.2, 0.2, 3000, 0.7, 0.2,  200];
+    [guess, ~] = fminsearch( 'fit_gauss', guess, options, x, y, 0);
+    hold on;
+    [mu1, sig1, amp1] = deal(  guess(1), guess(2), guess(3));
+    est = amp1.*exp(-(x-mu1).^2./sig1.^2);
+    %}
     
     % recreate the ideal signal
     output.oldIdeal = output.ideal; % keep the old signal to make comparisons
@@ -243,10 +263,6 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
     output.peaks = output.peaks(keepInd);
     output.iei = diff(output.peaks) / fs;
     
-    % and which breaths are sighs?
-    output.sighInd = output.amplitudes > output.sighsThreshold;
-    output.sighStarts = output.starts(output.sighInd);
-    
     for i = 1:length(output.starts)
         durations2(i) =  output.ends(i) - output.starts(i);
     end
@@ -256,7 +272,6 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
 
     % ----- % CALCULATE TIDAL VOLUME OF BREATHS % ----- %
     
-    % now calculate tidal volume
     for i = 1:length(output.starts)
         xv = filteredPlethSignal(output.starts(i):output.ends(i)); % signal line, top of figure
         if length(xv) > 1
@@ -283,8 +298,12 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
     hfit = histfit(output.tidalVolume(amplitudeInd & ieiInd), 100, 'kernel');
     y = hfit(1).YData;
     x = hfit(1).XData; 
-    close gcf
+    guess = [200, 50, 800];
+    [guess, ~] = fminsearch( 'fit_gauss', guess, options, x, y, 0);
+    hold on;
+    [mu1, sig1, amp1] = deal(  guess(1), guess(2), guess(3));
 
+    output.sighTidalVolumeThresh = mu1 + (sig1 * sighTidalVolumeMultFactor);
     output.meanTidalVolume = mean(output.tidalVolume(amplitudeInd & ieiInd));
         
     % ----- % THIS IS WHERE SLEEP DETECTION HAPPENS % ----- %
@@ -359,7 +378,6 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
         wakeEnds = wakeEnds - (removeFromSleepRecord * fs);
         wakeDurations = wakeEnds' - wakeStarts;
     end
-    
     
     % now calculate a continous iei signal that is the same length as the whole signal, well need this for comparisons later
     temp = output.starts;
@@ -452,14 +470,49 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
     output.theseAreMissedBreaths = output.theseAreMissedBreaths & ~wakeIndicator(1:end-1);
     output.theseAreNormalBreaths = ~output.theseAreMissedBreaths & ~wakeIndicator(1:end-1);
 
-    output.apneaDurations = output.iei(output.theseAreMissedBreaths);
+    output.apneaDurations = output.iei(output.theseAreMissedBreaths); % these apnea duraions are not right when I plot them for several of the events.. I'm not sure why this is yet.
     output.apneaIndex = find(output.theseAreMissedBreaths);
     output.howManyApneas = sum(output.theseAreMissedBreaths);
     output.postSighPlusDurationCrit = output.apneaThreshold * postSighPlusDurationMultiplier * fs;
-    output.apneaStarts = output.starts(output.apneaIndex);
+    output.apneaStarts = output.peaks(output.apneaIndex); % this was output.starts but changed it to peaks because the starts are not the start of the apnea
    
-    % set the apnea Types
+    % ----- identify sighs ----- %
     
+    % and which breaths are sighs?
+    output.sighInd = output.amplitudes > output.sighsThreshold & output.tidalVolume > output.sighTidalVolumeThresh;
+    output.sighStarts = output.peaks(output.sighInd); % was output.starts but that put the cirle at the start of the breath instead the of at the peak. 
+    output.sighAmplitudes = output.amplitudes(output.sighInd);
+    
+    %{
+    for i = 1:length(output.sighStarts)
+        startLooking = output.sighStarts(i);
+        endLooking = startLooking + floor((output.averageBreathDuration * fs));
+        signalMins(i) = min(filteredPlethSignal(startLooking:endLooking));  % this isn't done correctly and needs to be adjusted -- perhaps calc the dist between the peak and the min? The prominence... It's only a problem in records where there are false sighs detected..
+    end
+    
+    hfit = histfit(signalMins, 100, 'kernel');
+    y = hfit(1).YData;
+    x = hfit(1).XData;
+    guess = [-2, -1, 1400];
+    options = optimset('MaxFunEvals', 1000);
+    [guess, ~] = fminsearch( 'fit_gauss', guess, options, x, y, 0);
+    hold on;
+    [mu1, sig1, amp1 ] = deal(  guess(1), guess(2), guess(3));
+    output.sighMinThreshold = mu1 - abs(sig1 * sighMinMultiplier)
+    
+    % now reset these things
+    output.sighInd = output.amplitudes > output.sighsThreshold;
+    temp = find(output.sighInd);
+    output.sighInd = temp(signalMins < output.sighMinThreshold);
+    
+    output.sighStarts = output.peaks(output.sighInd); % was output.starts but that put the cirle at the start of the breath instead the of at the peak. 
+    output.sighAmplitudes = output.amplitudes(output.sighInd);
+    
+    %}
+    
+    % ----- set apnea types ----- %
+    
+    % set the apnea Types
     for i = 1:output.howManyApneas
         thisApneaStart = output.apneaStarts(i);
         distFromSighs = thisApneaStart - output.sighStarts;
@@ -469,13 +522,13 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
         % is there a sigh within 1 breath of the start or is the start sigh? The post-sigh
         if distFromSighs == 0
             output.typeOfApnea(i) = 2;        
-        elseif distFromSighs > 0 & distFromSighs <= output.apneaThreshold * fs
-            output.apneaStarts(i) = thisApneaStart - distFromSighs; % xxx added this to fix placement start.. is this right?
+        elseif distFromSighs <= output.apneaThreshold * fs / 3
+            output.apneaStarts(i) = thisApneaStart - distFromSighs;
             output.apneaDurations(i) = output.apneaDurations(i) + (distFromSighs / fs);
             output.apneaIndex(i) = output.apneaIndex(i) - 1;
-       
+            output.typeOfApnea(i) = 2;        
         % is there a sigh within the postSighPlusDuration Crit? if so then post sigh plus    
-        elseif  distFromSighs > output.apneaThreshold * fs / 2 & distFromSighs < output.postSighPlusDurationCrit
+        elseif distFromSighs < output.postSighPlusDurationCrit
             output.typeOfApnea(i) = 3;
             
         % otherwise the envent is a spontaneous apnea    

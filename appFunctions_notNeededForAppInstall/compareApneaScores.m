@@ -7,9 +7,9 @@ for i = 1:length(app.output.apneaIndex)
     a = app.timeSignal(a);
     a = min(round(a, 1)):0.01:max(round(a, 1));
     clear tp_temp2
-    for j = 1:size(app.humanScore,1)
-        startTime = app.humanScore.StartTime(j);
-        endTime = startTime + app.humanScore.Duration(j);
+    for j = 1:size(app.humanApneaScore,1)
+        startTime = app.humanApneaScore.StartTime(j);
+        endTime = startTime + app.humanApneaScore.Duration(j);
         b = startTime:endTime;
         b = min(round(b, 1)):0.01:max(round(b, 1));
         tp_temp = intersect(a, b);
@@ -27,7 +27,7 @@ for i = 1:length(app.output.apneaIndex)
 end
 app.tp_apneaScores = sum(tp_apneaScores);
 app.fp_apneaScores = length(app.output.apneaIndex) - app.tp_apneaScores;
-app.fn_apneaScores = size(app.humanScore, 1) - app.tp_apneaScores;
+app.fn_apneaScores = size(app.humanApneaScore, 1) - app.tp_apneaScores;
 app.tn_apneaScores = length(app.output.starts) - app.tp_apneaScores;
 app.confusionMat_apneaScores = abs([app.tn_apneaScores, app.fn_apneaScores; app.fp_apneaScores, app.tp_apneaScores]); % this shouldnt have to be an absolute value so it's just a temporary fix.    
     

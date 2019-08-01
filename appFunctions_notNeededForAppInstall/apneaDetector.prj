@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="225681701" file="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas/apneaDetector.prj" location="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas" name="apneaDetector" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="2694890630" file="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas/apneaDetector.prj" location="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas" name="apneaDetector" target="target.mlapps" target-name="Package App">
     <param.appname>apneaDetector</param.appname>
     <param.authnamewatermark>Jesse Pfammatter</param.authnamewatermark>
     <param.email>pfammatter@wisc.edu</param.email>
@@ -7,9 +7,9 @@
     <param.icon />
     <param.icons />
     <param.summary>Software for the automated detection of breaths and apneas from rodent pleth EDF records.</param.summary>
-    <param.description>dad</param.description>
+    <param.description />
     <param.screenshot>${PROJECT_ROOT}/apneaDetectorSplashScreen/splashScreenRectangle.png</param.screenshot>
-    <param.version>0.7</param.version>
+    <param.version>0.8</param.version>
     <param.products.name />
     <param.products.id />
     <param.products.version />
@@ -19,6 +19,7 @@
     <unset>
       <param.icon />
       <param.icons />
+      <param.description />
       <param.products.name />
       <param.products.id />
       <param.products.version />
@@ -30,10 +31,12 @@
     </fileset.main>
     <fileset.depfun>
       <file>${PROJECT_ROOT}/compareApneaScores.m</file>
+      <file>${PROJECT_ROOT}/compareSleepScores.m</file>
       <file>${PROJECT_ROOT}/detectBreathsApneasAndSleepFromPleth.m</file>
       <file>${PROJECT_ROOT}/filterAndNormalizePlethSignal.m</file>
       <file>${PROJECT_ROOT}/highPassChebyshev1Filt_apnea.m</file>
       <file>${PROJECT_ROOT}/importfile_humanApneaScores.m</file>
+      <file>${PROJECT_ROOT}/importfile_humanSleepScores.m</file>
       <file>/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Utility_Functions/EEGAnalysis/edfread.m</file>
       <file>/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Utility_Functions/EEGAnalysis/edfreadUntilDone.m</file>
       <file>/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Utility_Functions/EEGAnalysis/lineLength.m</file>
