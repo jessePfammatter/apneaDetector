@@ -19,6 +19,12 @@ Changelog:
 5. Removed the toggle button group for auto apnea classification and replaced it with a single line of text that isn't editable and that's hopefully less confusing for users.
 6. Removed menu option for changing of apnea threshold as 2x the average breath interval is the published apnea accepted duration.
 7. Added a menu button to toggle on/off the circles which indicate which event the event inspector in currently highlighting -- this helps with app speed for slower machines.
+8. Updated the detection of sighs to utilize the negative inflection that occurs after a sigh as another diagnostic to help differentiate sighs from regular but somewhat high amplitude breaths.
+9. Fixed the plotting of events in the cluster window to match their appropriate events.
+10. Fixed plotting the the apnea durations in the event inspector window.
+
+Known Issues:
+1. the breath amplitude histogram should shows a display of 'breaths' including those from wake. This is not what is used in the algorithm and as such I need to fix this window.
 
 # Update 7 07/25/19, version 0.7
 
