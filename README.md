@@ -8,7 +8,7 @@ Please download sample files from https://www.dropbox.com/sh/5dpmzuvlebjbheq/AAB
 
 ***A note to non-developer types:*** I've included my development scripts/functions such that the experienced user can modify and repackage this app to suit their needs. It's not suggested to download and manipulate the extra program files unless you are familiar with this process.
 
-# Update 9 08/05/19, version 0.9
+# Update 9 08/08/19, version 0.9
 
 Changelog:
 
