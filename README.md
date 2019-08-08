@@ -8,6 +8,16 @@ Please download sample files from https://www.dropbox.com/sh/5dpmzuvlebjbheq/AAB
 
 ***A note to non-developer types:*** I've included my development scripts/functions such that the experienced user can modify and repackage this app to suit their needs. It's not suggested to download and manipulate the extra program files unless you are familiar with this process.
 
+# Update 9 08/05/19, version 0.9
+
+Changelog:
+
+1. fixed the toggle button add/remove identification circles in filtered signal window and breath clustering window.
+2. Added some menu settings for sleep detection, sigh detection, and display settings.
+3. Added an 'About' menu item pointing to the github repository and the software version number.
+4. Fixed plotting for human scored apneas in the eventInspector window.
+5. Fixed an issue where some apnea durations were not getting labeled propertly in the breath clustering window.
+
 # Update 8 08/01/19, version 0.8
 
 Changelog:
