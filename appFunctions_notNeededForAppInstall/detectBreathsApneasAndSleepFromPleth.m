@@ -20,9 +20,10 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
     breathRateSecsHighEnd = 0.95; % seconds
     
     % under this list are things people might want control of for sighs
-    postSighPlusDurationMultiplier = 5; % breath lenghts, number is half the number of breath lengths that you think should be inclusive of post sigh breaths
+    postSighPlusDurationMultiplier = 10; % breath lenghts, the number of breath lengths that you think should be inclusive of post sigh breaths
     sighsStdMultiplier = 4;
     sighTidalVolumeMultFactor = 4;
+    sighArtifactDivisionFactor = 3;
     %sighMinMultiplier = 1; % xxx maybe remove this because it doesn't seem to work on many
     
     % sleepScoring adjustable variables.. perhaps make these adjustable for sleep.
@@ -473,7 +474,7 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
     output.apneaDurations = output.iei(output.theseAreMissedBreaths); % these apnea duraions are not right when I plot them for several of the events.. I'm not sure why this is yet.
     output.apneaIndex = find(output.theseAreMissedBreaths);
     output.howManyApneas = sum(output.theseAreMissedBreaths);
-    output.postSighPlusDurationCrit = output.apneaThreshold * postSighPlusDurationMultiplier * fs;
+    output.postSighPlusDurationCrit = output.averageBreathDuration * postSighPlusDurationMultiplier * fs;
     output.apneaStarts = output.peaks(output.apneaIndex); % this was output.starts but changed it to peaks because the starts are not the start of the apnea
    
     % ----- identify sighs ----- %
@@ -522,7 +523,7 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
         % is there a sigh within 1 breath of the start or is the start sigh? The post-sigh
         if distFromSighs == 0
             output.typeOfApnea(i) = 2;        
-        elseif distFromSighs <= output.apneaThreshold * fs / 3
+        elseif distFromSighs <= output.apneaThreshold * fs / sighArtifactDivisionFactor
             output.apneaStarts(i) = thisApneaStart - distFromSighs;
             output.apneaDurations(i) = output.apneaDurations(i) + (distFromSighs / fs);
             output.apneaIndex(i) = output.apneaIndex(i) - 1;
