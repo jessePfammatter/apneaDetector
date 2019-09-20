@@ -32,7 +32,7 @@ After detecting apneas and sleep, a user may import .csv files containing human 
 
 There are currently two ways to export data from apneaDetector: 
 
-1. Users can export data to a csv file by selecting File > Export Data to Spreadsheet. This produces a .xlsx file that includes a page for apnea summary data (and manual apnea scoring if uploaded), a page for hypopnea summary data, automated sleep scoring (and manual sleep scoring if uploaded), and a page that shows full data for every breath.
+1. (NOT AVAILABLE YET) Users can export data to a csv file by selecting File > Export Data to Spreadsheet. This produces a .xlsx file that includes a page for apnea summary data (and manual apnea scoring if uploaded), a page for hypopnea summary data, automated sleep scoring (and manual sleep scoring if uploaded), and a page that shows full data for every breath.
 2. Users may export a .mat file which can be used in the matlab terminal to analyze data and can be re-imported back into apneaDetector to view and explore pleth records that have previously been analyzed.
 
 # Known Glitches.
@@ -43,3 +43,6 @@ There are currently two ways to export data from apneaDetector:
 # Future Improvements.
 
 1. Allow humans to edit which events are breaths.
+2. Will update the automated sleep detection to include baseline shifts as a wake indicator.
+3. Need to adjust the duration of the post-sigh period after a sigh.. We set this using the nature of the data rather than just a stock period of time based on the number of breaths.
+4. Adding an excel spreadsheet data export function that offers the following pieces of data: spontaneous apnea number, spontaneous apnea duration, post-sigh apnea number, post-sign apnea duration, breathing frequency, tidal volume, sleep duration, apnea threshold, hypopnea number, hypopnea volume among others.

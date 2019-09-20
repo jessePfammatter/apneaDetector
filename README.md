@@ -6,7 +6,19 @@ This software requires Matlab's curvefitting toolbox to be installed.
 
 Please download sample files from https://www.dropbox.com/sh/5dpmzuvlebjbheq/AABBQOaLNCXxSjBD-T89iSk4a?dl=0 to test software.
 
+Please visit the help document (https://github.com/jessePfammatter/apneaDetector/blob/master/apneaDetector_Help.md) for infomration on using the app to analyzing data.
+
 ***A note to non-developer types:*** I've included my development scripts/functions such that the experienced user can modify and repackage this app to suit their needs. It's not suggested to download and manipulate the extra program files unless you are familiar with this process.
+
+# Update 10 08/29/19, version 0.10
+
+Changelog:
+
+1. Added the ability to use human sleep scoring rather than just automated detection when doing apnea detection.
+2. Included summary information for hypopneas in summary outputs.
+3. Provided an instruction manual for and analyzing a file and navigating the Matlab structure produced after an analysis.
+4. Fixed file export glitches.
+5. Removed hypopneas that were listed during automated or human identified 'wake'.
 
 # Update 9 08/08/19, version 0.9
 
