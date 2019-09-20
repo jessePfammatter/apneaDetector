@@ -1,4 +1,4 @@
-function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
+function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs, humanSleepScore)
 
     % set to 1 if you want to see the final versions of the plotting fits... need to work on this xxx
     doPlot = 0;
@@ -32,7 +32,7 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
     smoothDuration = 20; % works well at 30, go forwards and backwards for this smoothing
     nSecs = 4; % seconds
     signalVariabilityThreshMultiplier = 4; % std deviations
-    removeFromSleepRecord = 10; % seconds
+    removeFromSleepRecord = 0; % seconds
     
     % create the first and second derivative signals
     output.filteredSignalFirstDerivative = gradient(filteredPlethSignal);
@@ -350,34 +350,50 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
 
     % now expand the signal variability signal to the length of the full record
     signalVariability = repelem(signalVariability, epochSize_samplePoints);
-    signalVariability = smooth(signalVariability, fs * smoothDuration); % smoothed in a 30 second window
+    signalVariability = smooth(signalVariability, fs * smoothDuration); % smoothed in a n second window
 
     potentialSleeps = signalVariability < signalVariabilityThresh;
 
     % I think it's reasonable to cutout segments that are not at least 30 seconds long in order to match the humans scoring method
     temp = diff(potentialSleeps);
-    wakeStarts = find(temp == -1);
-    wakeStarts = [1; wakeStarts]; % assume we start out with wake
-    for jj = 1:length(wakeStarts)
-        temp2 = find(temp(wakeStarts(jj):end) == 1);
+    automatedWakeStarts = find(temp == -1);
+    automatedWakeStarts = [1; automatedWakeStarts]; % assume we start out with wake
+    for jj = 1:length(automatedWakeStarts)
+        temp2 = find(temp(automatedWakeStarts(jj):end) == 1);
         if ~isempty(temp2)
-            wakeEnds(jj) = wakeStarts(jj) + temp2(1);
+            automatedWakeEnds(jj) = automatedWakeStarts(jj) + temp2(1);
         else
-            wakeEnds(jj) = length(temp);
+            automatedWakeEnds(jj) = length(temp);
         end
     end
-    wakeDurations = wakeEnds' - wakeStarts;
+    automatedWakeDurations = automatedWakeEnds' - automatedWakeStarts;
 
     % drop wake durations less than wakeDuration cutoff
-    temp = wakeDurations > fs * wakeDurationsCutoff;
-    wakeStarts = wakeStarts(temp);
-    wakeEnds = wakeEnds(temp);
-    wakeDurations = wakeDurations(temp);
+    temp = automatedWakeDurations > fs * wakeDurationsCutoff;
+    automatedWakeStarts = automatedWakeStarts(temp);
+    automatedWakeEnds = automatedWakeEnds(temp);
+    automatedWakeDurations = automatedWakeDurations(temp);
     
-    % maybe here drop the last n seconds from each sleep section since these seem to be normal events? xxx
+    % maybe here drop the last n seconds from each sleep section since these seem to be normal events? 
     if removeFromSleepRecord > 0
-        wakeEnds = wakeEnds - (removeFromSleepRecord * fs);
-        wakeDurations = wakeEnds' - wakeStarts;
+        automatedWakeEnds = automatedWakeEnds - (removeFromSleepRecord * fs);
+        automatedWakeDurations = automatedWakeEnds' - automatedWakeStarts;
+    end
+    
+    if exist('humanSleepScore','var')
+        
+        humanIdealInd = 1:length(filteredPlethSignal);
+        humanSleepSearchIndex = [];
+        for i = 1:length(humanSleepScore.SleepStartDP)
+            tempRange = humanSleepScore.SleepStartDP(i) * 24 :humanSleepScore.SleepEndDP(i) * 24;
+            humanSleepSearchIndex = [humanSleepSearchIndex, tempRange]; % seems like the DPs are off by 24 hours?
+        end
+        humanWakeIndicator = ismember(humanIdealInd, humanSleepSearchIndex);
+        humanWakeStarts = find(diff(humanWakeIndicator) == -1); 
+        humanWakeEnds = find(diff(humanWakeIndicator) == 1);
+        humanWakeStarts = [1, humanWakeStarts]; % make sure that we start out with wake.
+        humanWakeEnds = [humanWakeEnds, length(filteredPlethSignal)]; % last wake period ends with the record
+        humanWakeDurations = humanWakeEnds - humanWakeStarts; 
     end
     
     % now calculate a continous iei signal that is the same length as the whole signal, well need this for comparisons later
@@ -425,10 +441,17 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
     
     % now export a bunch of the objects
     output.signalVariability = signalVariability;
-    output.wakeStarts = wakeStarts;
-    output.wakeEnds = wakeEnds;
-    output.wakeDurations = wakeDurations;
-    output.totalHoursSleeping = ((length( filteredPlethSignal) - sum(output.wakeDurations)) / fs) / 3600; % totalHours
+    output.automatedWakeStarts = automatedWakeStarts;
+    output.automatedWakeEnds = automatedWakeEnds;
+    output.automatedWakeDurations = automatedWakeDurations;
+    output.automatedTotalHoursSleeping = ((length( filteredPlethSignal) - sum(output.automatedWakeDurations)) / fs) / 3600; % totalHours
+    if exist('humanSleepScore','var')
+        output.humanWakeStarts = humanWakeStarts;
+        output.humanWakeEnds = humanWakeEnds;
+        output.humanWakeDurations = humanWakeDurations;
+        output.humanTotalHoursSleeping = ((length( filteredPlethSignal) - sum(output.humanWakeDurations)) / fs) / 3600; % totalHours
+    end
+    
     output.ieiContinuous = ieiContinuous;
     
     % ----- % NOW IDENTIFY APNEAS % ----- %
@@ -458,19 +481,34 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
     output.apneaThreshold = output.averageBreathDuration * apneaThresholdMultiplier;
     output.theseAreMissedBreaths = output.iei > output.apneaThreshold;
     
-    % need to exclude things that occur during 'wake' periods.
-    fullWakeList = zeros(1, sum(output.wakeDurations));
-    for j = 1:length(output.wakeStarts)
-        indexStart = sum(output.wakeDurations(1:j-1)) + 1;
-        indexEnd = indexStart + output.wakeDurations(j);
-        fullWakeList(:, indexStart:indexEnd) = output.wakeStarts(j):output.wakeStarts(j)+output.wakeDurations(j);
-    end
-       
-    wakeIndicator = ismember(output.starts, fullWakeList);
-    
-    output.theseAreMissedBreaths = output.theseAreMissedBreaths & ~wakeIndicator(1:end-1);
-    output.theseAreNormalBreaths = ~output.theseAreMissedBreaths & ~wakeIndicator(1:end-1);
+    % need to exclude things that occur during 'wake' periods. 
+     if exist('humanSleepScore', 'Var')
+        fullWakeList = zeros(1, sum(output.humanWakeDurations));
+        for j = 1:length(output.humanWakeStarts)
+            indexStart = sum(output.humanWakeDurations(1:j-1)) + 1;
+            indexEnd = indexStart + output.humanWakeDurations(j);
+            fullWakeList(:, indexStart:indexEnd) = output.humanWakeStarts(j):output.humanWakeStarts(j)+output.humanWakeDurations(j);
+        end
+        humanWakeIndicator = ismember(output.starts, fullWakeList);
+    else
+        fullWakeList = zeros(1, sum(output.automatedWakeDurations));
+        for j = 1:length(output.automatedWakeStarts)
+            indexStart = sum(output.automatedWakeDurations(1:j-1)) + 1;
+            indexEnd = indexStart + output.automatedWakeDurations(j);
+            fullWakeList(:, indexStart:indexEnd) = output.automatedWakeStarts(j):output.automatedWakeStarts(j)+output.automatedWakeDurations(j);
+        end
+        automatedWakeIndicator = ismember(output.starts, fullWakeList);
 
+    end
+    
+    if exist('humanSleepScore', 'Var')
+        output.theseAreMissedBreaths = output.theseAreMissedBreaths & ~humanWakeIndicator(1:end-1);
+        output.theseAreNormalBreaths = ~output.theseAreMissedBreaths & ~humanWakeIndicator(1:end-1);
+    else
+        output.theseAreMissedBreaths = output.theseAreMissedBreaths & ~automatedWakeIndicator(1:end-1);
+        output.theseAreNormalBreaths = ~output.theseAreMissedBreaths & ~automatedWakeIndicator(1:end-1);
+    end
+    
     output.apneaDurations = output.iei(output.theseAreMissedBreaths); % these apnea duraions are not right when I plot them for several of the events.. I'm not sure why this is yet.
     output.apneaIndex = find(output.theseAreMissedBreaths);
     output.howManyApneas = sum(output.theseAreMissedBreaths);
@@ -557,7 +595,23 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs)
   
     % ----- % CALCULATE HYPOPNEAS % ----- %
     
+    
     output.potentialHypopneas = output.tidalVolume <= output.meanTidalVolume * hypopneaThresh;
-
+    if exist('humanSleepScore', 'Var')
+        output.potentialHypopneas = output.potentialHypopneas & ~humanWakeIndicator;
+    else
+        output.potentialHypopneas = output.potentialHypopneas & ~automatedWakeIndicator;
+    end
+    output.nHypopneas = sum(output.potentialHypopneas);
+    
+    
+    % ----- % create files to be exported to an xlsx file % ----- % xxx
+    
+    %output.structsForSpreadsheetExport.automatedSleepRecord;
+    %output.structsForSpreadsheetExport.allBreathsSummary;
+    %output.structsForSpreadsheetExport.apneaSummary;
+    %output.structsForSpreadsheetExport.hypopneaSummary;
+    
+    
     % close all plots
     close all

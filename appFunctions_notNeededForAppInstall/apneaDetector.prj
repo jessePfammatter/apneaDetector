@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="507239637" file="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas/apneaDetector.prj" location="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas" name="apneaDetector" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="3993915739" file="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas/apneaDetector.prj" location="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas" name="apneaDetector" target="target.mlapps" target-name="Package App">
     <param.appname>apneaDetector</param.appname>
     <param.authnamewatermark>Jesse Pfammatter</param.authnamewatermark>
     <param.email>pfammatter@wisc.edu</param.email>
@@ -9,7 +9,7 @@
     <param.summary>Software for the automated detection of breaths and apneas from rodent pleth EDF records.</param.summary>
     <param.description />
     <param.screenshot>${PROJECT_ROOT}/apneaDetectorSplashScreen/splashScreenRectangle.png</param.screenshot>
-    <param.version>0.9</param.version>
+    <param.version>0.10</param.version>
     <param.products.name />
     <param.products.id />
     <param.products.version />
@@ -54,7 +54,14 @@
     <workflow />
     <matlab>
       <root>/Applications/MATLAB_R2019a.app</root>
-      <toolboxes />
+      <toolboxes>
+        <toolbox name="neuralnetwork" />
+      </toolboxes>
+      <toolbox>
+        <neuralnetwork>
+          <enabled>true</enabled>
+        </neuralnetwork>
+      </toolbox>
     </matlab>
     <platform>
       <unix>true</unix>
