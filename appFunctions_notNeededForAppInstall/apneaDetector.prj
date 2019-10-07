@@ -1,25 +1,25 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="3993915739" file="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas/apneaDetector.prj" location="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas" name="apneaDetector" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="4132606786" file="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas/apneaDetector.prj" location="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas" name="apneaDetector" target="target.mlapps" target-name="Package App">
     <param.appname>apneaDetector</param.appname>
     <param.authnamewatermark>Jesse Pfammatter</param.authnamewatermark>
     <param.email>pfammatter@wisc.edu</param.email>
-    <param.company>University of Wisconsin Madison</param.company>
+    <param.company>University of Wisconsin, Madison</param.company>
     <param.icon />
     <param.icons />
-    <param.summary>Software for the automated detection of breaths and apneas from rodent pleth EDF records.</param.summary>
-    <param.description />
+    <param.summary />
+    <param.description>This software is designed to automatically detect and classify apneas from rodent pleth records.</param.description>
     <param.screenshot>${PROJECT_ROOT}/apneaDetectorSplashScreen/splashScreenRectangle.png</param.screenshot>
-    <param.version>0.10</param.version>
+    <param.version>0.11</param.version>
     <param.products.name />
     <param.products.id />
     <param.products.version />
     <param.platforms />
     <param.output>${PROJECT_ROOT}</param.output>
-    <param.guid>b5fe4c19-d233-4cca-a559-9028967502cc</param.guid>
+    <param.guid>f4a1e1e3-86b4-4f06-a09d-fdd703f13f62</param.guid>
     <unset>
       <param.icon />
       <param.icons />
-      <param.description />
+      <param.summary />
       <param.products.name />
       <param.products.id />
       <param.products.version />
@@ -43,10 +43,7 @@
       <file>/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Utility_Functions/EEGAnalysis/twoThreshPeakDetect.m</file>
       <file>/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Utility_Functions/General/zci.m</file>
     </fileset.depfun>
-    <fileset.resources>
-      <file>/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Utility_Functions/Fitting/fit_gauss.m</file>
-      <file>/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Utility_Functions/Fitting/fit_gauss2.m</file>
-    </fileset.resources>
+    <fileset.resources />
     <fileset.package />
     <build-deliverables>
       <file location="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects" name="detectApneas" optional="false">/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas</file>

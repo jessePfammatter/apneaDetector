@@ -385,7 +385,8 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs, 
         humanIdealInd = 1:length(filteredPlethSignal);
         humanSleepSearchIndex = [];
         for i = 1:length(humanSleepScore.SleepStartDP)
-            tempRange = humanSleepScore.SleepStartDP(i) * 24 :humanSleepScore.SleepEndDP(i) * 24;
+          %  tempRange = humanSleepScore.SleepStartDP(i) * 24 :humanSleepScore.SleepEndDP(i) * 24;
+            tempRange = humanSleepScore.SleepStartDP(i) * 25 :humanSleepScore.SleepEndDP(i) * 25; % ### JO MODIFIED
             humanSleepSearchIndex = [humanSleepSearchIndex, tempRange]; % seems like the DPs are off by 24 hours?
         end
         humanWakeIndicator = ismember(humanIdealInd, humanSleepSearchIndex);
