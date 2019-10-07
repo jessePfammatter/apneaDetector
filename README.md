@@ -10,6 +10,16 @@ Please visit the help document (https://github.com/jessePfammatter/apneaDetector
 
 ***A note to non-developer types:*** I've included my development scripts/functions such that the experienced user can modify and repackage this app to suit their needs. It's not suggested to download and manipulate the extra program files unless you are familiar with this process.
 
+# Update 11 10/07/19, version 0.10
+
+The updates in this version were provided by Jonathan Ouellette. Thanks!
+
+Changelog:
+1. Fixed the uisave error.
+2. Added a text box that displays the filepath of the human sleep scoring.
+3. Added a few lines in the import .mat section that will display the filepath of the human sleep if it was used for the exported file.
+4. Fixed error that preivously incorrectly converted the wake start/stop times from 20Hz to 500Hz. Changed conversion factor value from 24 to 25.
+
 # Update 10 08/29/19, version 0.10
 
 Changelog:
