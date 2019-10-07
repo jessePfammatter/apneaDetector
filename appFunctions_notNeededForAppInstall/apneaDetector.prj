@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="4132606786" file="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas/apneaDetector.prj" location="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas" name="apneaDetector" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="1558516984" file="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas/apneaDetector.prj" location="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas" name="apneaDetector" target="target.mlapps" target-name="Package App">
     <param.appname>apneaDetector</param.appname>
     <param.authnamewatermark>Jesse Pfammatter</param.authnamewatermark>
     <param.email>pfammatter@wisc.edu</param.email>
@@ -30,20 +30,23 @@
       <file>${PROJECT_ROOT}/apneaDetector.mlapp</file>
     </fileset.main>
     <fileset.depfun>
-      <file>${PROJECT_ROOT}/compareApneaScores.m</file>
-      <file>${PROJECT_ROOT}/compareSleepScores.m</file>
-      <file>${PROJECT_ROOT}/detectBreathsApneasAndSleepFromPleth.m</file>
-      <file>${PROJECT_ROOT}/filterAndNormalizePlethSignal.m</file>
-      <file>${PROJECT_ROOT}/highPassChebyshev1Filt_apnea.m</file>
-      <file>${PROJECT_ROOT}/importfile_humanApneaScores.m</file>
-      <file>${PROJECT_ROOT}/importfile_humanSleepScores.m</file>
-      <file>/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Utility_Functions/EEGAnalysis/edfread.m</file>
-      <file>/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Utility_Functions/EEGAnalysis/edfreadUntilDone.m</file>
-      <file>/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Utility_Functions/EEGAnalysis/lineLength.m</file>
-      <file>/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Utility_Functions/EEGAnalysis/twoThreshPeakDetect.m</file>
-      <file>/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Utility_Functions/General/zci.m</file>
+      <file>/Users/jesse/Library/Application Support/MathWorks/MATLAB Add-Ons/Apps/apneaDetector/Projects/detectApneas/compareApneaScores.m</file>
+      <file>/Users/jesse/Library/Application Support/MathWorks/MATLAB Add-Ons/Apps/apneaDetector/Projects/detectApneas/compareSleepScores.m</file>
+      <file>/Users/jesse/Library/Application Support/MathWorks/MATLAB Add-Ons/Apps/apneaDetector/Projects/detectApneas/detectBreathsApneasAndSleepFromPleth.m</file>
+      <file>/Users/jesse/Library/Application Support/MathWorks/MATLAB Add-Ons/Apps/apneaDetector/Projects/detectApneas/filterAndNormalizePlethSignal.m</file>
+      <file>/Users/jesse/Library/Application Support/MathWorks/MATLAB Add-Ons/Apps/apneaDetector/Projects/detectApneas/highPassChebyshev1Filt_apnea.m</file>
+      <file>/Users/jesse/Library/Application Support/MathWorks/MATLAB Add-Ons/Apps/apneaDetector/Projects/detectApneas/importfile_humanApneaScores.m</file>
+      <file>/Users/jesse/Library/Application Support/MathWorks/MATLAB Add-Ons/Apps/apneaDetector/Projects/detectApneas/importfile_humanSleepScores.m</file>
+      <file>/Users/jesse/Library/Application Support/MathWorks/MATLAB Add-Ons/Apps/apneaDetector/Utility_Functions/EEGAnalysis/edfread.m</file>
+      <file>/Users/jesse/Library/Application Support/MathWorks/MATLAB Add-Ons/Apps/apneaDetector/Utility_Functions/EEGAnalysis/edfreadUntilDone.m</file>
+      <file>/Users/jesse/Library/Application Support/MathWorks/MATLAB Add-Ons/Apps/apneaDetector/Utility_Functions/EEGAnalysis/lineLength.m</file>
+      <file>/Users/jesse/Library/Application Support/MathWorks/MATLAB Add-Ons/Apps/apneaDetector/Utility_Functions/EEGAnalysis/twoThreshPeakDetect.m</file>
+      <file>/Users/jesse/Library/Application Support/MathWorks/MATLAB Add-Ons/Apps/apneaDetector/Utility_Functions/General/zci.m</file>
     </fileset.depfun>
-    <fileset.resources />
+    <fileset.resources>
+      <file>/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Utility_Functions/Fitting/fit_gauss.m</file>
+      <file>/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Utility_Functions/Fitting/fit_gauss2.m</file>
+    </fileset.resources>
     <fileset.package />
     <build-deliverables>
       <file location="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects" name="detectApneas" optional="false">/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas</file>
