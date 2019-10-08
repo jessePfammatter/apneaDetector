@@ -9,7 +9,7 @@ signalLength = length(app.filteredSignal);
 computerIdealInd = 1:signalLength;
 computerSleepSearchIndex = [];
 for i = 1:length(signalLength)
-    tempRange = app.output.wakeStarts(i):app.output.wakeEnds(i);
+    tempRange = app.output.automatedWakeStarts(i):app.output.automatedWakeEnds(i);
     computerSleepSearchIndex = [computerSleepSearchIndex, tempRange];
 end
     
