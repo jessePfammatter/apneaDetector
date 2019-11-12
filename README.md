@@ -6,11 +6,22 @@ This software requires Matlab's curvefitting toolbox to be installed.
 
 Please download sample files from https://www.dropbox.com/sh/5dpmzuvlebjbheq/AABBQOaLNCXxSjBD-T89iSk4a?dl=0 to test software.
 
-Please visit the help document (https://github.com/jessePfammatter/apneaDetector/blob/master/apneaDetector_Help.md) for infomration on using the app to analyzing data.
+Please visit the help document (https://github.com/jessePfammatter/apneaDetector/blob/master/apneaDetector_Help.md) for information on using the app to analyzing data.
 
 ***A note to non-developer types:*** I've included my development scripts/functions such that the experienced user can modify and repackage this app to suit their needs. It's not suggested to download and manipulate the extra program files unless you are familiar with this process.
 
-# Update 11 10/07/19, version 0.10
+# Update 12 11/08/19, version 0.12
+
+Changelog:
+1. Added text to the title of the Notes box to inform users not to use the Return key. It's a temporary fix but it will hopefully prevent the problem where users loose notes that they have added after starting a new line.
+2. I've added the ability to export files to csv. Upon selection of this method the file automatically saves in the same directory as the file that is being analyzed.
+3. I've added progress dialog bars after user loads certain files. Previously users were unaware that the app was processing data and on slower machines it's unclear what's going on.
+4. Updated help file to help users navigate .mat app internals.
+5. changed the representation of the machine wake/sleep scoring to match the human sleep scoring instead of being inverse.
+6. Fixed an error where the truth table was incorrect for the sleep scoring.
+7. Added an additional information bar at the bottom of the app screen so that users can see which apnea scoring file they have loaded if they choose to load human apneas.
+
+# Update 11 10/07/19, version 0.11
 
 The updates in this version were provided by Jonathan Ouellette. Thanks!
 
@@ -18,7 +29,7 @@ Changelog:
 1. Fixed the uisave error.
 2. Added a text box that displays the filepath of the human sleep scoring.
 3. Added a few lines in the import .mat section that will display the filepath of the human sleep if it was used for the exported file.
-4. Fixed error that preivously incorrectly converted the wake start/stop times from 20Hz to 500Hz. Changed conversion factor value from 24 to 25.
+4. Fixed error that previously incorrectly converted the wake start/stop times from 20Hz to 500Hz. Changed conversion factor value from 24 to 25.
 
 # Update 10 08/29/19, version 0.10
 
@@ -38,7 +49,7 @@ Changelog:
 2. Added some menu settings for sleep detection, sigh detection, and display settings.
 3. Added an 'About' menu item pointing to the github repository and the software version number.
 4. Fixed plotting for human scored apneas in the eventInspector window.
-5. Fixed an issue where some apnea durations were not getting labeled propertly in the breath clustering window.
+5. Fixed an issue where some apnea durations were not getting labeled properly in the breath clustering window.
 
 # Update 8 08/01/19, version 0.8
 
@@ -46,32 +57,32 @@ Changelog:
 
 1. Added ability to import human sleep score files. These files must be in nueroscore output for NeuroScore. If they are not from neuroscore then files must be a csv file with columns called StartTime1 (start times of sleep sections in seconds) and EndTime1 (end times in seconds).
 2. Added ability to load/edit previously saved files.
-3. Reduced hight of app window and disabled resize of insepctor window because it causes problems with plotting.
+3. Reduced height of app window and disabled resize of inspector window because it causes problems with plotting.
 4. Added a window to allow a popout window the filtered signal that can be used for zooming around and exploring the signal.
 5. Removed the toggle button group for auto apnea classification and replaced it with a single line of text that isn't editable and that's hopefully less confusing for users.
 6. Removed menu option for changing of apnea threshold as 2x the average breath interval is the published apnea accepted duration.
 7. Added a menu button to toggle on/off the circles which indicate which event the event inspector in currently highlighting -- this helps with app speed for slower machines.
-8. Updated the detection of sighs to utilize tidal volume to help differentite sighs from regular breaths. (Using the negative deflection associated with some sighs isn't consitently workable for all files.)
+8. Updated the detection of sighs to utilize tidal volume to help differentiate sighs from regular breaths. (Using the negative deflection associated with some sighs isn't consistently workable for all files.)
 9. Fixed the plotting of events in the cluster window to match their appropriate events.
-10. Fixed plotting the the apnea durations in the event inspector window.
+10. Fixed plotting the apnea durations in the event inspector window.
 
 Known Issues:
-1. the breath amplitude histogram should shows a display of 'breaths' including those from wake. This is not what is used in the algorithm and as such I need to fix this window.
+1. the breath amplitude histogram should show a display of 'breaths' including those from wake. This is not what is used in the algorithm and as such I need to fix this window.
 
 # Update 7 07/25/19, version 0.7
 
 Changelog:
 
-1. Updated supporting plots on right of screen to fix axes dissapearing problem.
+1. Updated supporting plots on right of screen to fix axes disappearing problem.
 2. Changed y label of main plots to indicate that signals are normalized.
 3. Fixed problem where post-sigh artifacts are causing mistakes in the breath clustering view.
 4. Fixed issue where marker data points are showing up in the legend.
 5. Changed the 'Unset' button to read 'Unadjusted' for clarity.
-6. Fixed plotting issue where some 'normal breaths' were shown in the range of apneas in the clustering window. This was caused because some dong duration missed breaths were found during wake were getting counted as normal breaths.
+6. Fixed plotting issue where some 'normal breaths' were shown in the range of apneas in the clustering window. This was caused because some long duration missed breaths were found during wake were getting counted as normal breaths.
 7. Checked all options and made sure that unavailable functionality is greyed out or not visible.
 8. Fixed issue where importing apnea scoring isn't properly displayed.
 9. Fixed plotting of apnea comparisons.
-10. Added functionality to zoom in and out of event Inspector window to look for sighs, etc. prior to anpea.
+10. Added functionality to zoom in and out of event Inspector window to look for sighs, etc. prior to apnea.
 11. Added hotkeys for loading signal and apnea detection.
 12. Used Matlab profiler to identify slow areas in app and reduced runtime from ~80 seconds to ~45 seconds on my machine. Still other areas to improve speed if needed.
 13. Added a cancel button to apnea detection wait window.
@@ -88,7 +99,7 @@ Changelog:
 
 1. Added summary plots for windows 2/3 on the right side of the plot
 2. Updated the starting position of the apneaDetector window to [0, 0] to prevent problems on smaller screens... Still problematic on really small screens.
-3. Changed the asthetic of the plots to all have white background.
+3. Changed the aesthetic of the plots to all have white background.
 4. Added a version indicator to the menu list.
 
 Known issues:
@@ -99,9 +110,9 @@ Duration of apnea is plotted a bit short. The data for the apneas are stored cor
 
 Changelog:
 
-1. Improved code annotation and cleaned up some unecessary text in apneaDetector.mlapp
+1. Improved code annotation and cleaned up some unnecessary text in apneaDetector.mlapp
 2. Improved support plots on the right side of app.
-3. Fixed issue where artifact after sigh was causing breaths to be detected after sigh which caused shortened apneas and innaccurate classification.
+3. Fixed issue where artifact after sigh was causing breaths to be detected after sigh which caused shortened apneas and inaccurate classification.
 4. Identified all sighs, including ones that don't have an apnea directly following.
 5. Fixed issue where apnea durations were being plotted incorrectly in the event inspector window. Events are still plotted a bit on the short end for some reason but the relative durations are correct after a fix to some indexing.
 6. Added a button to visualize raw signal in event inspector window.
@@ -116,7 +127,7 @@ Changelog:
 4. Hid visibility of save and load functionality from the file menu until bugs are worked out.. Currently only the data export functionality is available.
 5. Changed the value of the manual apnea category assign button to 'Unset' rather than to mimic the automated score. This aids the user in knowing on which events they have made a manual change.
 6. Added a Legend to and improved visualization of the Filtered Signal and Apnea Detection Plot Window.
-7. Reduced number of data points plotted in serval plot windows in order to reduce the number of 'glitches' as a woraround for Matlab's plotting methods issues.
+7. Reduced number of data points plotted in serval plot windows in order to reduce the number of 'glitches' as a workaround for Matlab's plotting methods issues.
 
 New Known Issues:
 As a result of this update the display indicating, 'Please Wait..' does not show at all during processing.
@@ -144,13 +155,13 @@ Updated app to apneaDetector v0.2
 
 # Update 1 07/15/19, version 0.1
 
-First beta relase of this software on July 15th 2019. apneaDetector v0.1
+First beta release of this software on July 15th 2019. apneaDetector v0.1
 
 Currently Known Issues:
 
 1. 'Close' menus item not functional.
 2. Ability to load in a human scored sleep file is not currently available.
-3. Suporting plots on the right of the detection window are not functional.
+3. Supporting plots on the right of the detection window are not functional.
 4. 'Save' functionality is available which allows saving of the current state of the app, however the warning, 'Unable to save App Designer app object. Save not supported for matlab.apps.AppBase objects' shows up. Essentially the relevant data is saved and can be accessed directly via Matlab but cannot be 'Loaded' back into the application. This is due to a Matlab glitch and is being worked on through a support ticket at Matlab.
 5. Sporatic display problems when slecting different channels from the imported EDF file or using the zoom menu functionality. This is due to a Matlab glitch and is being worked on through a support ticket at Matlab.
-6. Errors saying, 'Error using newplot (line 64), Error while evaluating Figure CreateFcn. Previously accesible file ... is not inaccesible' appear during apnea detection. The app appears to run properly desipte these errors.
+6. Errors saying, 'Error using newplot (line 64), Error while evaluating Figure CreateFcn. Previously accessible file ... is not inaccessible' appear during apnea detection. The app appears to run properly despite these errors.
