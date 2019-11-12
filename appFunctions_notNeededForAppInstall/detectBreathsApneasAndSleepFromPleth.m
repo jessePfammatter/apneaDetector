@@ -1,12 +1,12 @@
-function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs, humanSleepScore)
+function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, unfilteredPlethSignal, fs, humanSleepScore)
 
     % set to 1 if you want to see the final versions of the plotting fits... need to work on this xxx
-    doPlot = 0;
+    doPlot = 1;
 
     % establish the time signal
     totalSeconds = length( filteredPlethSignal) /  fs;
     totalMinutes =  totalSeconds / 60;
-
+    
     % set some adjustable variables for breath detection.
     highThreshMultiplier = 0.40; % quantiles of the signal
     lowThreshMultiplier = 0.10;
@@ -267,7 +267,7 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs, 
     for i = 1:length(output.starts)
         durations2(i) =  output.ends(i) - output.starts(i);
     end
-    output.durations = durations2 /fs;
+    output.durations = durations2 / fs;
     output.BPM = length(output.starts) / totalMinutes;
 
 
@@ -276,11 +276,13 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs, 
     for i = 1:length(output.starts)
         xv = filteredPlethSignal(output.starts(i):output.ends(i)); % signal line, top of figure
         if length(xv) > 1
-            vq = interp1([output.starts(i), output.ends(i)],[filteredPlethSignal(output.starts(i)), filteredPlethSignal(output.ends(i))],output.starts(i):output.ends(i)); % interpolates the bottom line from 
+            unfilteredBreathMax(i) = max(unfilteredPlethSignal(output.starts(i):output.ends(i)));
+            vq = interp1([output.starts(i), output.ends(i)],[unfilteredPlethSignal(output.starts(i)), unfilteredPlethSignal(output.ends(i))],output.starts(i):output.ends(i)); % interpolates the bottom line from 
 
             % this works but probably needs to be broken down into section where there are line crossing to get a more exact value (using the subtrction part.. If you just subtract the vq part then signals that have agregious line crossings are calculated v poorly.
             output.tidalVolume(i) = trapz(xv + abs(min(xv))) - trapz(vq + abs(min(xv)));              
-
+            output.tidalVolume(i) = output.tidalVolume(i) * (size(xv, 2) /  fs ); % should provide tidal volume in L per breath in original units were L/s
+            
             % count the number of line crossings for each plot such that we can optimize the correct detection positions
             output.linesCrossedPerBreath(i) = length(find((xv-vq) == 0)) - 2;
             
@@ -306,7 +308,8 @@ function output = detectBreathsApneasAndSleepFromPleth(filteredPlethSignal, fs, 
 
     output.sighTidalVolumeThresh = mu1 + (sig1 * sighTidalVolumeMultFactor);
     output.meanTidalVolume = mean(output.tidalVolume(amplitudeInd & ieiInd));
-        
+    output.mean_unfilteredBreathMax = mean(unfilteredBreathMax(amplitudeInd & ieiInd))
+    
     % ----- % THIS IS WHERE SLEEP DETECTION HAPPENS % ----- %
         
     % break this into chuncks and calculate the line length

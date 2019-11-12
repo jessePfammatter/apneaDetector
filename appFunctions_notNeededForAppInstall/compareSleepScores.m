@@ -8,7 +8,7 @@ signalLength = length(app.filteredSignal);
 % create a sleep ideal signal for the computer
 computerIdealInd = 1:signalLength;
 computerSleepSearchIndex = [];
-for i = 1:length(signalLength)
+for i = 1:length(app.output.automatedWakeStarts)
     tempRange = app.output.automatedWakeStarts(i):app.output.automatedWakeEnds(i);
     computerSleepSearchIndex = [computerSleepSearchIndex, tempRange];
 end
@@ -34,10 +34,11 @@ for i = 1:length(app.humanSleepScore.StartTime1)
 end
 humanIdeal = ismember(humanIdealInd, humanSleepSearchIndex);
 
+
 app.confusionMat_sleepScores = confusionmat(computerIdealSeconds, double(humanIdeal'));      
-app.tp_sleepScores = app.confusionMat_sleepScores(1);
-app.fp_sleepScores = app.confusionMat_sleepScores(2);
+app.tp_sleepScores = app.confusionMat_sleepScores(4);
+app.fp_sleepScores = app.confusionMat_sleepScores(1);
 app.fn_sleepScores = app.confusionMat_sleepScores(3);
-app.tn_sleepScores = app.confusionMat_sleepScores(4);
+app.tn_sleepScores = app.confusionMat_sleepScores(2);
 
 end
