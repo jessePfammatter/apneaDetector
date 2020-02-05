@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="3084386301" file="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas/apneaDetector.prj" location="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas" name="apneaDetector" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="4109319363" file="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas/apneaDetector.prj" location="/Users/jesse/Dropbox/research/jonesLab/jonesLab_git/jonesLab_code/Projects/detectApneas" name="apneaDetector" target="target.mlapps" target-name="Package App">
     <param.appname>apneaDetector</param.appname>
     <param.authnamewatermark>Jesse Pfammatter</param.authnamewatermark>
     <param.email>pfammatter@wisc.edu</param.email>
@@ -8,8 +8,8 @@
     <param.icons />
     <param.summary />
     <param.description>This software is designed to automatically detect and classify apneas from rodent pleth records.</param.description>
-    <param.screenshot>${PROJECT_ROOT}/apneaDetectorSplashScreen/splashScreenRectangle.png</param.screenshot>
-    <param.version>0.11</param.version>
+    <param.screenshot>${PROJECT_ROOT}/apneaDetectorSplashScreen/splashScreenSquare.png</param.screenshot>
+    <param.version>0.14</param.version>
     <param.products.name />
     <param.products.id />
     <param.products.version />
@@ -72,7 +72,7 @@
       <vista>false</vista>
       <linux>false</linux>
       <solaris>false</solaris>
-      <osver>10.14.1</osver>
+      <osver>10.15.3</osver>
       <os32>false</os32>
       <os64>true</os64>
       <arch>maci64</arch>
