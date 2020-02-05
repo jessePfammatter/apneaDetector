@@ -10,6 +10,16 @@ Please visit the help document (https://github.com/jessePfammatter/apneaDetector
 
 ***A note to non-developer types:*** I've included my development scripts/functions such that the experienced user can modify and repackage this app to suit their needs. It's not suggested to download and manipulate the extra program files unless you are familiar with this process.
 
+# Update 14 01/31/20, version 0.14
+
+1. Converted Post Sigh Duration default to a multiplier of 3 instead of 10 as default and added a spinner in the Event Inspector window that allows users to change this default. There was some confusion about if this parameter was coded as a function of the breath rate and indeed it is and has been for several versions of the code.
+2. Improved the excel output file to have more information and better labeling. Now includes data sheets for parameters used in detection, summary statistics for apneas, data on every apnea found at used thresholds, data for every breath identified, sleep scoring, and some truth tables if manual sleep and apnea comparisons are loaded.
+3. Changed the background color to powder blue.. This was a very important change.
+
+# Update 13 11/14/19, version 0.13
+
+1. Simplified the input of detectBreathsApneasAndSleepFromPleth function utilized by the GUI.
+
 # Update 12 11/08/19, version 0.12
 
 Changelog:
