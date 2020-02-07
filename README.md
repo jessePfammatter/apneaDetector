@@ -10,6 +10,14 @@ Please visit the help document (https://github.com/jessePfammatter/apneaDetector
 
 ***A note to non-developer types:*** I've included my development scripts/functions such that the experienced user can modify and repackage this app to suit their needs. It's not suggested to download and manipulate the extra program files unless you are familiar with this process.
 
+# Update 15 02/07/20, version 0.15
+
+1. Fixed a bug in the PSP multiplier label where it wouldn't show up properly once a signal was loaded.
+2. Moved the explore signal label in the filtered signal and apnea detection window so that it no longer is in the way of the sleep and apnea records.
+3. Fixed an error where exporting to spreadsheet wasn't allowed because of duplicate naming of a variable.
+4. Implemented a color coding in the event inspector window. This edit written by Jonathan Ouellette.
+
+
 # Update 14 01/31/20, version 0.14
 
 1. Converted Post Sigh Duration default to a multiplier of 3 instead of 10 as default and added a spinner in the Event Inspector window that allows users to change this default. There was some confusion about if this parameter was coded as a function of the breath rate and indeed it is and has been for several versions of the code.
