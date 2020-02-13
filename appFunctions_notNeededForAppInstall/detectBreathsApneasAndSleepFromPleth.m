@@ -24,7 +24,7 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
     nStdsFromIIEContinuous = 3; % std deviations
 
     % under this list are things people might want control of for sighs
-    postSighPlusDurationMultiplier = 3; % breath lenghts, the number of breath lengths that you think should be inclusive of post sigh breaths, this used to be 10 but Tracy suggested (1/20) 3 might be better.
+    postSighPlusDurationMultiplier = 10; % breath lenghts, the number of breath lengths that you think should be inclusive of post sigh breaths
     sighsStdMultiplier = 4;
     sighTidalVolumeMultFactor = 4;
     sighArtifactDivisionFactor = 3;
@@ -127,6 +127,7 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
     for i = 1:length(output.ends) - 1 % this stops one short, and the last breaths end does not change
 
         temp = filteredSignalFirstDerivative(output.ends(i): starts2(i + 1));
+        
         % find the zero crossings using the first derivative
         index = zci(temp);
         if isempty(index)
@@ -514,11 +515,16 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
     end
     output.averageBreathDuration = x(locs(index));
 
-    % now set a bunch of the variables
+    % set a bunch of the variables
     output.apneaThreshold = output.averageBreathDuration * apneaThresholdMultiplier;
     output.theseAreMissedBreaths = output.iei > output.apneaThreshold;
     
-    % need to exclude things that occur during 'wake' periods. 
+    % remove all the apneas within 2 minutes of the end of the recording.
+    fullLengthOfRecordingInMinutes = output.starts(end) / fs / 60;
+    breathsInLast2mins = abs(output.starts / fs / 60 - fullLengthOfRecordingInMinutes) < 2;
+    output.theseAreMissedBreaths = output.theseAreMissedBreaths & ~breathsInLast2mins(1:end-1);
+    
+    % find things that occur during 'wake' periods. 
      if exist('humanSleepScore', 'Var')
         fullWakeList = zeros(1, sum(output.humanWakeDurations));
         for j = 1:length(output.humanWakeStarts)
@@ -536,8 +542,12 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
         end
         automatedWakeIndicator = ismember(output.starts, fullWakeList);
 
-    end
+     end
     
+    % save vectors of apneas without excluding wake 
+    output.theseAreMissedBreathsIncludingWake = output.theseAreMissedBreaths;        
+    
+    % make a output that includes things during sleep periods
     if exist('humanSleepScore', 'Var')
         output.theseAreMissedBreaths = output.theseAreMissedBreaths & ~humanWakeIndicator(1:end-1);
         output.theseAreNormalBreaths = ~output.theseAreMissedBreaths & ~humanWakeIndicator(1:end-1);
