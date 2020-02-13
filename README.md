@@ -10,6 +10,18 @@ Please visit the help document (https://github.com/jessePfammatter/apneaDetector
 
 ***A note to non-developer types:*** I've included my development scripts/functions such that the experienced user can modify and repackage this app to suit their needs. It's not suggested to download and manipulate the extra program files unless you are familiar with this process.
 
+# Update 16 02/13/20, version 0.16
+
+1. Changed the background of apneaTypeLabel to white so it is more visable.
+2. Changed the save features back to uisave so that users can determine where they save their files.
+3. Changed the autosaved name for .mat and spreadsheet outputs so they use a underscore instead of a period for the version number. Previously this was causing confusion for computer interpretation of the file extensions.
+4. Added warning to users when selecting PSP multiplier change.
+5. Dropped the last 2 minutes from consideration of apnea detection. During this time any 'potential apneas' are likely artifact caused by dissconection of the system/recording.
+6. Changed the default PSP multiplier to 7 -- 3 was way too short, an effective time of around 2 seconds, 10 produces a duration of around 7 seconds and a default of 7 produces abot 5 second durations.
+7. Fixed a few errors with loading human sleep scores for apnea detection. Jonathan Ouellette made these changes.
+8. Converted all the time axis to datetime objects so that users know what time of day the apneas are occuring. It also makes the axes a little more easy to interpret.
+9. Improved export functions to include time of day informtaion.
+
 # Update 15 02/07/20, version 0.15
 
 1. Fixed a bug in the PSP multiplier label where it wouldn't show up properly once a signal was loaded.
