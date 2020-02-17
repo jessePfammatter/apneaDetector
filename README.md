@@ -10,6 +10,10 @@ Please visit the help document (https://github.com/jessePfammatter/apneaDetector
 
 ***A note to non-developer types:*** I've included my development scripts/functions such that the experienced user can modify and repackage this app to suit their needs. It's not suggested to download and manipulate the extra program files unless you are familiar with this process.
 
+# Update 17 02/17/20, version 0.17
+1. A bunch of random bug fixes to make saving and loading .mat files work properly again. Changes by Jonathan Ouellette.
+2. Fixed some bug issues related to loading of the splash screen. 
+
 # Update 16 02/13/20, version 0.16
 
 1. Changed the background of apneaTypeLabel to white so it is more visable.
