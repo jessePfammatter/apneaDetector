@@ -392,10 +392,20 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
     potentialSleeps = signalVariability < signalVariabilityThresh;
     output.signalVariability = signalVariability;
     
-    % I think it's reasonable to cutout segments that are not at least 30 seconds long in order to match the humans scoring method
+    % cut out segments that are not at least n seconds long in order to match the humans scoring method
     temp = diff(potentialSleeps);
     automatedWakeStarts = find(temp == -1);
     automatedWakeStarts = [1; automatedWakeStarts]; % assume we start out with wake
+    
+    % count the last 2 minutes of the record as wake automatically.
+    lastWakeStart = floor((size(temp, 1) / fs / 60 - 2) * fs * 60);
+    if lastWakeStart > automatedWakeStarts(end)
+        automatedWakeStarts = [automatedWakeStarts; lastWakeStart];
+    else
+        automatedWakeStarts(end) = lastWakeStart;
+    end
+    
+    
     for jj = 1:length(automatedWakeStarts)
         temp2 = find(temp(automatedWakeStarts(jj):end) == 1);
         if ~isempty(temp2)
@@ -404,6 +414,8 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
             automatedWakeEnds(jj) = length(temp);
         end
     end
+    
+    
     automatedWakeDurations = automatedWakeEnds' - automatedWakeStarts;
 
     % drop wake durations less than wakeDuration cutoff
@@ -412,12 +424,12 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
     automatedWakeEnds = automatedWakeEnds(temp);
     automatedWakeDurations = automatedWakeDurations(temp);
     
-    % maybe here drop the last n seconds from each sleep section since these seem to be normal events? 
+    % if removeFromSleepRecord parameter is set then drop the last n seconds from each sleep section since these seem to be normal events? 
     if removeFromSleepRecord > 0
         automatedWakeEnds = automatedWakeEnds - (removeFromSleepRecord * fs);
         automatedWakeDurations = automatedWakeEnds' - automatedWakeStarts;
     end
-    
+        
     if exist('humanSleepScore','var')
         
         humanIdealInd = 1:length(filteredPlethSignal);
@@ -518,11 +530,6 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
     % set a bunch of the variables
     output.apneaThreshold = output.averageBreathDuration * apneaThresholdMultiplier;
     output.theseAreMissedBreaths = output.iei > output.apneaThreshold;
-    
-    % remove all the apneas within 2 minutes of the end of the recording.
-    fullLengthOfRecordingInMinutes = output.starts(end) / fs / 60;
-    breathsInLast2mins = abs(output.starts / fs / 60 - fullLengthOfRecordingInMinutes) < 2;
-    output.theseAreMissedBreaths = output.theseAreMissedBreaths & ~breathsInLast2mins(1:end-1);
     
     % find things that occur during 'wake' periods. 
      if exist('humanSleepScore', 'Var')
