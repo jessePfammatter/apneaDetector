@@ -18,8 +18,7 @@ if isempty(Hd)
     h = fdesign.highpass('fst,fp,ast,ap', Fstop, Fpass, Astop, Apass, Fs);
     
     Hd = design(h, 'cheby1', ...
-        'MatchExactly', 'passband', ...
-        'SOSScaleNorm', 'Linf');
+        'MatchExactly', 'passband'); % SSScaleNorm was set to Linf prior to downloading Matlab 2020a
     
     
     

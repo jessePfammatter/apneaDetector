@@ -37,8 +37,8 @@ humanIdeal = ismember(humanIdealInd, humanSleepSearchIndex);
 
 app.confusionMat_sleepScores = confusionmat(computerIdealSeconds, double(humanIdeal'));      
 app.tp_sleepScores = app.confusionMat_sleepScores(4);
-app.fp_sleepScores = app.confusionMat_sleepScores(1);
+app.fp_sleepScores = app.confusionMat_sleepScores(2); 
 app.fn_sleepScores = app.confusionMat_sleepScores(3);
-app.tn_sleepScores = app.confusionMat_sleepScores(2);
+app.tn_sleepScores = app.confusionMat_sleepScores(1);
 
 end

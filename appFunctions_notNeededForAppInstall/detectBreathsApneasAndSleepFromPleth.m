@@ -25,9 +25,9 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
 
     % under this list are things people might want control of for sighs
     postSighPlusDurationMultiplier = 10; % breath lenghts, the number of breath lengths that you think should be inclusive of post sigh breaths
-    sighsStdMultiplier = 4;
-    sighTidalVolumeMultFactor = 4;
-    sighArtifactDivisionFactor = 3;
+    sighsStdMultiplier = 3.5;
+    %sighTidalVolumeMultFactor = 1; not currently using this as it just complicates things without a clear benefit
+    sighArtifactDivisionFactor = 3; % 1/x of the apnea threshold
     
     % sleepScoring adjustable variables.. perhaps make these adjustable for sleep.
     wakeDurationsCutoff = 30; % seconds, works well at 30 as well
@@ -62,7 +62,7 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
     
     output.detectionParameters.postSighPlusDurationMultiplier = postSighPlusDurationMultiplier; 
     output.detectionParameters.sighsStdMultiplier = sighsStdMultiplier;
-    output.detectionParameters.sighTidalVolumeMultFactor = sighTidalVolumeMultFactor;
+    %output.detectionParameters.sighTidalVolumeMultFactor = sighTidalVolumeMultFactor;
     output.detectionParameters.sighArtifactDivisionFactor = sighArtifactDivisionFactor;
     
     output.detectionParameters.wakeDurationsCutoff = wakeDurationsCutoff;
@@ -340,7 +340,7 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
     hold on;
     [mu1, sig1, amp1] = deal(  guess(1), guess(2), guess(3));
 
-    output.sighTidalVolumeThresh = mu1 + (sig1 * sighTidalVolumeMultFactor);
+    %output.sighTidalVolumeThresh = mu1 + (sig1 * sighTidalVolumeMultFactor);
     output.meanTidalVolume = mean(output.tidalVolume(amplitudeInd & ieiInd));
     output.mean_unfilteredBreathMax = mean(unfilteredBreathMax(amplitudeInd & ieiInd));
     
@@ -392,10 +392,20 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
     potentialSleeps = signalVariability < signalVariabilityThresh;
     output.signalVariability = signalVariability;
     
-    % I think it's reasonable to cutout segments that are not at least 30 seconds long in order to match the humans scoring method
+    % cut out segments that are not at least n seconds long in order to match the humans scoring method
     temp = diff(potentialSleeps);
     automatedWakeStarts = find(temp == -1);
     automatedWakeStarts = [1; automatedWakeStarts]; % assume we start out with wake
+    
+    % count the last 2 minutes of the record as wake automatically.
+    lastWakeStart = floor((size(temp, 1) / fs / 60 - 2) * fs * 60);
+    if lastWakeStart > automatedWakeStarts(end)
+        automatedWakeStarts = [automatedWakeStarts; lastWakeStart];
+    else
+        automatedWakeStarts(end) = lastWakeStart;
+    end
+    
+    
     for jj = 1:length(automatedWakeStarts)
         temp2 = find(temp(automatedWakeStarts(jj):end) == 1);
         if ~isempty(temp2)
@@ -404,6 +414,8 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
             automatedWakeEnds(jj) = length(temp);
         end
     end
+    
+    
     automatedWakeDurations = automatedWakeEnds' - automatedWakeStarts;
 
     % drop wake durations less than wakeDuration cutoff
@@ -412,12 +424,12 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
     automatedWakeEnds = automatedWakeEnds(temp);
     automatedWakeDurations = automatedWakeDurations(temp);
     
-    % maybe here drop the last n seconds from each sleep section since these seem to be normal events? 
+    % if removeFromSleepRecord parameter is set then drop the last n seconds from each sleep section since these seem to be normal events? 
     if removeFromSleepRecord > 0
         automatedWakeEnds = automatedWakeEnds - (removeFromSleepRecord * fs);
         automatedWakeDurations = automatedWakeEnds' - automatedWakeStarts;
     end
-    
+        
     if exist('humanSleepScore','var')
         
         humanIdealInd = 1:length(filteredPlethSignal);
@@ -519,11 +531,6 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
     output.apneaThreshold = output.averageBreathDuration * apneaThresholdMultiplier;
     output.theseAreMissedBreaths = output.iei > output.apneaThreshold;
     
-    % remove all the apneas within 2 minutes of the end of the recording.
-    fullLengthOfRecordingInMinutes = output.starts(end) / fs / 60;
-    breathsInLast2mins = abs(output.starts / fs / 60 - fullLengthOfRecordingInMinutes) < 2;
-    output.theseAreMissedBreaths = output.theseAreMissedBreaths & ~breathsInLast2mins(1:end-1);
-    
     % find things that occur during 'wake' periods. 
      if exist('humanSleepScore', 'Var')
         fullWakeList = zeros(1, sum(output.humanWakeDurations));
@@ -565,7 +572,7 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
     % ----- identify sighs ----- %
     
     % and which breaths are sighs?
-    output.sighInd = output.amplitudes > output.sighsThreshold & output.tidalVolume > output.sighTidalVolumeThresh;
+    output.sighInd = output.amplitudes > output.sighsThreshold; % & output.tidalVolume > output.sighTidalVolumeThresh;
     output.sighStarts = output.peaks(output.sighInd); % was output.starts but that put the cirle at the start of the breath instead the of at the peak. 
     output.sighAmplitudes = output.amplitudes(output.sighInd);
     
@@ -605,18 +612,18 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
             thisApneaStart = output.apneaStarts(i);
             temptemp = thisApneaStart - output.sighStarts;
             temptemp = temptemp(temptemp >= 0);
-            apneaTimeFromPreviousSigh(i) = min(temptemp);
+            output.apneaTimeFromPreviousSigh(i) = min(temptemp);
 
             % is there a sigh within 1 breath of the start or is the start sigh? The post-sigh
-            if apneaTimeFromPreviousSigh(i) == 0
+            if output.apneaTimeFromPreviousSigh(i) == 0
                 output.typeOfApnea(i) = 2;        
-            elseif apneaTimeFromPreviousSigh(i) <= output.apneaThreshold * fs / sighArtifactDivisionFactor
-                output.apneaStarts(i) = thisApneaStart - apneaTimeFromPreviousSigh(i);
-                output.apneaDurations(i) = output.apneaDurations(i) + (apneaTimeFromPreviousSigh(i) / fs);
+            elseif output.apneaTimeFromPreviousSigh(i) <= output.apneaThreshold * fs / sighArtifactDivisionFactor
+                output.apneaStarts(i) = thisApneaStart - output.apneaTimeFromPreviousSigh(i);
+                output.apneaDurations(i) = output.apneaDurations(i) + (output.apneaTimeFromPreviousSigh(i) / fs);
                 output.apneaIndex(i) = output.apneaIndex(i) - 1;
                 output.typeOfApnea(i) = 2;        
             % is there a sigh within the postSighPlusDuration Crit? if so then post sigh plus    
-            elseif apneaTimeFromPreviousSigh(i) < output.postSighPlusDurationCrit
+            elseif output.apneaTimeFromPreviousSigh(i) < output.postSighPlusDurationCrit
                 output.typeOfApnea(i) = 3;
 
             % otherwise the envent is a spontaneous apnea    
@@ -626,7 +633,6 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
             end
         end
         
-        output.apneaTimeFromPreviousSigh(i) = apneaTimeFromPreviousSigh(i);
         
         output.nSpontaneousApneas = sum(output.typeOfApnea == 1);
         output.nPostSighApneas = sum(output.typeOfApnea == 2);
