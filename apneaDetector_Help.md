@@ -32,7 +32,7 @@ After detecting apneas and sleep, a user may import .csv files containing human 
 
 There are currently two ways to export data from apneaDetector: 
 
-1. Users can export data to a csv file by selecting File > Export Data to Spreadsheet. This produces a .xlsx file that includes a page for apnea summary data (and manual apnea scoring if uploaded), a page for hypopnea summary data, automated sleep scoring (and manual sleep scoring if uploaded), and a page that shows full data for every breath.
+1. Users can export data to a Microsoft Excel file by selecting File > Export Data to Spreadsheet. This produces a .xlsx file that includes a page for apnea summary data (and manual apnea scoring if uploaded), a page for hypopnea summary data, automated sleep scoring (and manual sleep scoring if uploaded), and a page that shows full data for every breath. Please note that if you are not using Matlab version 2019b or later then spreadsheets will save with 3 blanks sheets prior to the relevant data.
 2. Users may export a .mat file which can be used in the Matlab terminal to analyze data and can be re-imported back into apneaDetector to view and explore pleth records that have previously been analyzed.
 
 # Navigating the Exported .mat Data Structure

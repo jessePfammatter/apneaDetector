@@ -10,6 +10,19 @@ Please visit the help document (https://github.com/jessePfammatter/apneaDetector
 
 ***A note to non-developer types:*** I've included my development scripts/functions such that the experienced user can modify and repackage this app to suit their needs. It's not suggested to download and manipulate the extra program files unless you are familiar with this process.
 
+# Update 19 05/02/20, version 0.19
+1. Fixed promblem where the data timeSincePreviousSigh was showing up as zero except for the last apnea.
+2. Simplified apnea classification settings by removing the requirement for sighs to have a particular tidal volume.
+3. Fixed issue where menu items that are not ready to be used were visibile.
+4. Fixed an issue where Sleep scoring confusion matrix had false positives and true negatives reversed.
+5. Fixed a display issue where when 'use human sleep scoring is selected' the label says, 'Machine Sleep' instead of 'Human Sleep'.
+6. Fixed several other small errors throughout the code.
+
+# Update 18 02/19/20, version 0.18
+1. Fixed an error with file output when saving the output as a .mat file.
+2. Changed the method of dropping the last 2 minutes of apneas. Now last 2 minutes of the record are considered wake and therefore apneas are not found in that section. This is better than the previous method because the apnea frequency is now calculated properly. 
+3. A few other bug fixes.
+
 # Update 17 02/17/20, version 0.17
 1. A bunch of random bug fixes to make saving and loading .mat files work properly again. Changes by Jonathan Ouellette.
 2. Fixed some bug issues related to loading of the splash screen. 
