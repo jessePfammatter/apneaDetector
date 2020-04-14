@@ -10,7 +10,13 @@ Please visit the help document (https://github.com/jessePfammatter/apneaDetector
 
 ***A note to non-developer types:*** I've included my development scripts/functions such that the experienced user can modify and repackage this app to suit their needs. It's not suggested to download and manipulate the extra program files unless you are familiar with this process.
 
-# Update 19 05/02/20, version 0.19
+# Update 20 04/14/20, version 0.20
+1. Added a toggle to show post sigh plus (PSP) duration in the event window. This helps in the case where a sigh is missed and subsequent apneas might need to be manually classified as PSP.
+2. Fixed a glitch where human sleep scores and apnea scores loaded for a particular file don't clear from system memory when a new EDF record is analyzed for apneas.
+3. Added more user friendly control of sigh detection threshold near the event inspector.
+4. Fixed a few menu items to be a bitmore user friendly.
+
+# Update 19 04/02/20, version 0.19
 1. Fixed promblem where the data timeSincePreviousSigh was showing up as zero except for the last apnea.
 2. Simplified apnea classification settings by removing the requirement for sighs to have a particular tidal volume.
 3. Fixed issue where menu items that are not ready to be used were visibile.
