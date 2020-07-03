@@ -263,23 +263,6 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
     % save the high amplitude cutoff to figure out which breaths are sighs
     output.sighsThreshold = amplitude_mu + (amplitude_sig * sighsStdMultiplier);
     
-    %{
-    
-    
-    xxx
-    
-    % find the just outside the normal range of the raw signal in order to set a cutoff of for the low side of the sighs
-    temp = filteredPlethSignal(filteredPlethSignal > -15 & filteredPlethSignal < 15);
-    hfit = histfit(temp, 100, 'kernel');
-    y = hfit(1).YData;
-    x = hfit(1).XData;
-    guess = [0.2, 0.2, 3000, 0.7, 0.2,  200];
-    [guess, ~] = fminsearch( 'fit_gauss', guess, options, x, y, 0);
-    hold on;
-    [mu1, sig1, amp1] = deal(  guess(1), guess(2), guess(3));
-    est = amp1.*exp(-(x-mu1).^2./sig1.^2);
-    %}
-    
     % recreate the ideal signal
     %oldIdeal = ideal; % keep the old signal to make comparisons
     deleteInd = ~keepInd;
@@ -304,9 +287,7 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
     output.durations = durations2 / fs;
     output.BPM = length(output.starts) / totalMinutes;
 
-
     % ----- % CALCULATE TIDAL VOLUME OF BREATHS % ----- %
-    
     for i = 1:length(output.starts)
         xv = filteredPlethSignal(output.starts(i):output.ends(i)); % signal line, top of figure
         if length(xv) > 1
@@ -415,7 +396,6 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
         end
     end
     
-    
     automatedWakeDurations = automatedWakeEnds' - automatedWakeStarts;
 
     % drop wake durations less than wakeDuration cutoff
@@ -434,9 +414,14 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
         
         humanIdealInd = 1:length(filteredPlethSignal);
         humanSleepSearchIndex = [];
-        for i = 1:length(humanSleepScore.SleepStartDP)
+        whatTypeOfSleep = humanSleepScore.RodentSleep;
+        allSleepInd = whatTypeOfSleep == 'S';
+        REMSleepInd = whatTypeOfSleep == 'R';
+
+        for i =1:size(whatTypeOfSleep, 1)
+            
             tempRange = humanSleepScore.SleepStartDP(i) * 25 :humanSleepScore.SleepEndDP(i) * 25;
-            humanSleepSearchIndex = [humanSleepSearchIndex, tempRange]; % seems like the DPs are off by 24 hours?
+            humanSleepSearchIndex = [humanSleepSearchIndex, tempRange];
         end
         humanWakeIndicator = ismember(humanIdealInd, humanSleepSearchIndex);
         humanWakeStarts = find(diff(humanWakeIndicator) == -1); 
@@ -444,6 +429,23 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
         humanWakeStarts = [1, humanWakeStarts]; % make sure that we start out with wake.
         humanWakeEnds = [humanWakeEnds, length(filteredPlethSignal)]; % last wake period ends with the record
         humanWakeDurations = humanWakeEnds - humanWakeStarts; 
+        
+         
+        humanIdealInd = 1:length(filteredPlethSignal);
+        humanSleepSearchIndex = [];
+        
+        temp = find(REMSleepInd);
+        
+        for i = 1:length(temp)
+            j = temp(i);
+            tempRange = humanSleepScore.SleepStartDP(j) * 25 :humanSleepScore.SleepEndDP(j) * 25;
+            humanSleepSearchIndex = [humanSleepSearchIndex, tempRange];
+        end
+        humanREMIndicator = ismember(humanIdealInd, humanSleepSearchIndex);
+        humanREMStarts = find(diff(humanREMIndicator) == 1); 
+        humanREMEnds = find(diff(humanREMIndicator) == -1);        
+        humanREMDurations = humanREMEnds - humanREMStarts; 
+        
     end
     
     % now calculate a continous iei signal that is the same length as the whole signal, well need this for comparisons later
@@ -500,6 +502,10 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
         output.humanWakeEnds = humanWakeEnds;
         output.humanWakeDurations = humanWakeDurations;
         output.humanTotalHoursSleeping = ((length( filteredPlethSignal) - sum(output.humanWakeDurations)) / fs) / 3600; % totalHours
+        output.humanREMDurations = humanREMDurations;
+        output.humanTotalHoursREM = ((length( filteredPlethSignal) - sum(output.humanREMDurations)) / fs) / 3600; % totalHours
+        output.humanREMStarts = humanREMStarts;
+        output.humanREMEnds = humanREMEnds;      
     end
     
     output.ieiContinuous = ieiContinuous;
@@ -537,10 +543,22 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
         for j = 1:length(output.humanWakeStarts)
             indexStart = sum(output.humanWakeDurations(1:j-1)) + 1;
             indexEnd = indexStart + output.humanWakeDurations(j);
-            fullWakeList(:, indexStart:indexEnd) = output.humanWakeStarts(j):output.humanWakeStarts(j)+output.humanWakeDurations(j);
+            fullWakeList(:, indexStart:indexEnd) = output.humanWakeStarts(j):output.humanWakeStarts(j)+output.humanWakeDurations(j);    
         end
         humanWakeIndicator = ismember(output.starts, fullWakeList);
-    else
+        
+        fullWakeListREM = zeros(1, sum(output.humanREMDurations));
+        for j = 1:length(output.humanREMStarts)
+            indexStart = output.humanREMStarts(j);
+            indexEnd = output.humanREMEnds(j);
+            fullWakeListREM(:, indexStart:indexEnd) = output.humanREMStarts(j):output.humanREMStarts(j)+output.humanREMDurations(j);    
+        end
+        
+        
+        humanREMIndicator = ismember(output.starts, fullWakeListREM);
+        output.humanREMIndicator = humanREMIndicator;
+          
+     else
         fullWakeList = zeros(1, sum(output.automatedWakeDurations));
         for j = 1:length(output.automatedWakeStarts)
             indexStart = sum(output.automatedWakeDurations(1:j-1)) + 1;
@@ -558,16 +576,21 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
     if exist('humanSleepScore', 'Var')
         output.theseAreMissedBreaths = output.theseAreMissedBreaths & ~humanWakeIndicator(1:end-1);
         output.theseAreNormalBreaths = ~output.theseAreMissedBreaths & ~humanWakeIndicator(1:end-1);
+        output.theseAreMissedREMBreaths = output.theseAreMissedBreaths & humanREMIndicator(1:end-1);
     else
         output.theseAreMissedBreaths = output.theseAreMissedBreaths & ~automatedWakeIndicator(1:end-1);
         output.theseAreNormalBreaths = ~output.theseAreMissedBreaths & ~automatedWakeIndicator(1:end-1);
     end
     
-    output.apneaDurations = output.iei(output.theseAreMissedBreaths); % these apnea duraions are not right when I plot them for several of the events.. I'm not sure why this is yet.
+    output.apneaDurations = output.iei(output.theseAreMissedBreaths);
+    output.apneaDurationsREM = output.iei(output.theseAreMissedREMBreaths); 
     output.apneaIndex = find(output.theseAreMissedBreaths);
+    output.apneaIndexREM = find(output.theseAreMissedREMBreaths);
     output.howManyApneas = sum(output.theseAreMissedBreaths);
+    output.howManyApneasREM = sum(output.theseAreMissedREMBreaths);
     output.postSighPlusDurationCrit = output.averageBreathDuration * postSighPlusDurationMultiplier * fs;
-    output.apneaStarts = output.peaks(output.apneaIndex); % this was output.starts but changed it to peaks because the starts are not the start of the apnea
+    output.apneaStarts = output.peaks(output.apneaIndex);
+    output.apneaStartsREM = output.peaks(output.apneaIndexREM); 
    
     % ----- identify sighs ----- %
     
@@ -575,36 +598,8 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
     output.sighInd = output.amplitudes > output.sighsThreshold; % & output.tidalVolume > output.sighTidalVolumeThresh;
     output.sighStarts = output.peaks(output.sighInd); % was output.starts but that put the cirle at the start of the breath instead the of at the peak. 
     output.sighAmplitudes = output.amplitudes(output.sighInd);
-    
-    %{
-    for i = 1:length(output.sighStarts)
-        startLooking = output.sighStarts(i);
-        endLooking = startLooking + floor((output.averageBreathDuration * fs));
-        signalMins(i) = min(filteredPlethSignal(startLooking:endLooking));  % this isn't done correctly and needs to be adjusted -- perhaps calc the dist between the peak and the min? The prominence... It's only a problem in records where there are false sighs detected..
-    end
-    
-    hfit = histfit(signalMins, 100, 'kernel');
-    y = hfit(1).YData;
-    x = hfit(1).XData;
-    guess = [-2, -1, 1400];
-    options = optimset('MaxFunEvals', 1000);
-    [guess, ~] = fminsearch( 'fit_gauss', guess, options, x, y, 0);
-    hold on;
-    [mu1, sig1, amp1 ] = deal(  guess(1), guess(2), guess(3));
-    output.sighMinThreshold = mu1 - abs(sig1 * sighMinMultiplier)
-    
-    % now reset these things
-    output.sighInd = output.amplitudes > output.sighsThreshold;
-    temp = find(output.sighInd);
-    output.sighInd = temp(signalMins < output.sighMinThreshold);
-    
-    output.sighStarts = output.peaks(output.sighInd); % was output.starts but that put the cirle at the start of the breath instead the of at the peak. 
-    output.sighAmplitudes = output.amplitudes(output.sighInd);
-    
-    %}
-    
+  
     % ----- set apnea types ----- %
-    
     if output.howManyApneas > 0
     
         % set the apnea Types
@@ -633,7 +628,6 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
             end
         end
         
-        
         output.nSpontaneousApneas = sum(output.typeOfApnea == 1);
         output.nPostSighApneas = sum(output.typeOfApnea == 2);
         output.nPostSighPlus = sum(output.typeOfApnea == 3);
@@ -649,11 +643,71 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
         output.spontaneousApneaIndex = output.apneaIndex(output.typeOfApnea == 1);
         output.postSighApneaIndex = output.apneaIndex(output.typeOfApnea == 2);
         output.postSighPlusApneaIndex = output.apneaIndex(output.typeOfApnea == 3);
+    else
+        output.nSpontaneousApneas = 0;
+        output.nPostSighApneas = 0;
+        output.nPostSighPlus = 0;
+        
+        output.durationsSpontaneousApneas = 0;
+        output.durationsPostSighApneas = 0;
+        output.durationsPostSighPlus = 0;
+        
     end
-  
+    
+    if output.howManyApneasREM > 0
+    
+        % set the apnea Types
+        for i = 1:output.howManyApneasREM
+            thisApneaStart = output.apneaStarts(i);
+            temptemp = thisApneaStart - output.sighStarts;
+            temptemp = temptemp(temptemp >= 0);
+            output.apneaTimeFromPreviousSighREM(i) = min(temptemp);
+
+            % is there a sigh within 1 breath of the start or is the start sigh? The post-sigh
+            if output.apneaTimeFromPreviousSighREM(i) == 0
+                output.typeOfApneaREM(i) = 2;        
+            elseif output.apneaTimeFromPreviousSighREM(i) <= output.apneaThreshold * fs / sighArtifactDivisionFactor
+                output.apneaStartsREM(i) = thisApneaStart - output.apneaTimeFromPreviousSighREM(i);
+                output.apneaDurationsREM(i) = output.apneaDurationsREM(i) + (output.apneaTimeFromPreviousSighREM(i) / fs);
+                output.apneaIndexREM(i) = output.apneaIndexREM(i) - 1;
+                output.typeOfApneaREM(i) = 2;        
+            % is there a sigh within the postSighPlusDuration Crit? if so then post sigh plus    
+            elseif output.apneaTimeFromPreviousSighREM(i) < output.postSighPlusDurationCrit
+                output.typeOfApneaREM(i) = 3;
+
+            % otherwise the envent is a spontaneous apnea    
+            else
+
+                output.typeOfApneaREM(i) = 1;
+            end
+        end
+        
+        output.nSpontaneousApneasREM = sum(output.typeOfApneaREM == 1);
+        output.nPostSighApneasREM = sum(output.typeOfApneaREM == 2);
+        output.nPostSighPlusREM = sum(output.typeOfApneaREM == 3);
+
+        output.durationsSpontaneousApneasREM = output.apneaDurationsREM(output.typeOfApneaREM == 1);
+        output.durationsPostSighApneasREM = output.apneaDurationsREM(output.typeOfApneaREM == 2);
+        output.durationsPostSighPlusREM = output.apneaDurationsREM(output.typeOfApneaREM == 3);
+
+        output.startsSpontaneousApneasREM = output.apneaStartsREM(output.typeOfApneaREM == 1);
+        output.startsPostSighApneasREM = output.apneaStartsREM(output.typeOfApneaREM == 2);
+        output.startsPostSighPlusREM = output.apneaStartsREM(output.typeOfApneaREM == 3);
+
+        output.spontaneousApneaIndexREM = output.apneaIndexREM(output.typeOfApneaREM == 1);
+        output.postSighApneaIndexREM = output.apneaIndexREM(output.typeOfApneaREM == 2);
+        output.postSighPlusApneaIndexREM = output.apneaIndexREM(output.typeOfApneaREM == 3);
+    else
+        output.nSpontaneousApneasREM = 0;
+        output.nPostSighApneasREM = 0;
+        output.nPostSighPlusREM = 0;
+        
+        output.durationsSpontaneousApneasREM = 0;
+        output.durationsPostSighApneasREM = 0;
+        output.durationsPostSighPlusREM = 0;
+    end
+    
     % ----- % CALCULATE HYPOPNEAS % ----- %
-    
-    
     output.potentialHypopneas = output.tidalVolume <= output.meanTidalVolume * hypopneaThresh;
     if exist('humanSleepScore', 'Var')
         output.potentialHypopneas = output.potentialHypopneas & ~humanWakeIndicator;
@@ -661,15 +715,6 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
         output.potentialHypopneas = output.potentialHypopneas & ~automatedWakeIndicator;
     end
     output.nHypopneas = sum(output.potentialHypopneas);
-    
-    
-    % ----- % create files to be exported to an xlsx file % ----- % xxx I think we are going to do this in the app so no need here?
-    
-    %output.structsForSpreadsheetExport.automatedSleepRecord;
-    %output.structsForSpreadsheetExport.allBreathsSummary;
-    %output.structsForSpreadsheetExport.apneaSummary;
-    %output.structsForSpreadsheetExport.hypopneaSummary;
-    
     
     % close all plots
     close all
