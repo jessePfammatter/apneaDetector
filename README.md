@@ -10,6 +10,11 @@ Please visit the help document (https://github.com/jessePfammatter/apneaDetector
 
 ***A note to non-developer types:*** I've included my development scripts/functions such that the experienced user can modify and repackage this app to suit their needs. It's not suggested to download and manipulate the extra program files unless you are familiar with this process.
 
+
+# Update 21 07/03/20, version 0.21
+1. Fixed an error where unchecking 'Display Event Marker' prior to loading signal caused an error in the command window.
+2. Added the ability for the computer to identify REM-like periods marked by humans in nueroscore. Summary data and export functionality include REM specific apnea numbers. Apneas identified in REM-like periods are included in the regular summary data and then counted again in the REM summary data.
+
 # Update 20 04/14/20, version 0.20
 1. Added a toggle to show post sigh plus (PSP) duration in the event window. This helps in the case where a sigh is missed and subsequent apneas might need to be manually classified as PSP.
 2. Fixed a glitch where human sleep scores and apnea scores loaded for a particular file don't clear from system memory when a new EDF record is analyzed for apneas.
