@@ -503,7 +503,7 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
         output.humanWakeDurations = humanWakeDurations;
         output.humanTotalHoursSleeping = ((length( filteredPlethSignal) - sum(output.humanWakeDurations)) / fs) / 3600; % totalHours
         output.humanREMDurations = humanREMDurations;
-        output.humanTotalHoursREM = ((length( filteredPlethSignal) - sum(output.humanREMDurations)) / fs) / 3600; % totalHours
+        output.humanTotalHoursREM = (sum(output.humanREMDurations) / fs) / 3600; % totalHours
         output.humanREMStarts = humanREMStarts;
         output.humanREMEnds = humanREMEnds;      
     end
@@ -656,9 +656,9 @@ function output = detectBreathsApneasAndSleepFromPleth(unfilteredPlethSignal, fs
     
     if output.howManyApneasREM > 0
     
-        % set the apnea Types
+        % set the apnea types for REM
         for i = 1:output.howManyApneasREM
-            thisApneaStart = output.apneaStarts(i);
+            thisApneaStart = output.apneaStartsREM(i);
             temptemp = thisApneaStart - output.sighStarts;
             temptemp = temptemp(temptemp >= 0);
             output.apneaTimeFromPreviousSighREM(i) = min(temptemp);
